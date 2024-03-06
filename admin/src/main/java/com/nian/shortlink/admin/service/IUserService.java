@@ -1,8 +1,8 @@
 package com.nian.shortlink.admin.service;
 
-import com.nian.shortlink.admin.common.convention.result.Result;
-import com.nian.shortlink.admin.dao.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nian.shortlink.admin.domain.entity.User;
+import com.nian.shortlink.admin.domain.dto.UserDTO;
 import com.nian.shortlink.admin.domain.vo.UserVO;
 
 /**
@@ -12,5 +12,23 @@ import com.nian.shortlink.admin.domain.vo.UserVO;
 */
 public interface IUserService extends IService<User> {
 
-    Result<UserVO> queryByUsername(String username);
+    /**
+     * 根据用户名查询用户信息
+     * @param username 用户名
+     * @return UserVO
+     */
+    UserVO queryByUsername(String username);
+
+    /**
+     * 查询用户是否存在
+     * @param username 用户名
+     * @return Boolean
+     */
+    Boolean hasUsername(String username);
+
+    /**
+     * 注册用户
+     * requestParam 用户注册请求参数
+     */
+    void userRegister(UserDTO requestParam);
 }

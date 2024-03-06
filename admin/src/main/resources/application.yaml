@@ -1,6 +1,11 @@
 server:
   port: 8002
 spring:
+  data:
+    redis:
+      host: 101.42.140.176
+      port: 6379
+      password: lwl06021126
   datasource:
     username: root
     password: lwl06021126

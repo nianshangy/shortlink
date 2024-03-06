@@ -1,6 +1,6 @@
-package com.nian.shortlink.admin.dao.mapper;
+package com.nian.shortlink.admin.mapper;
 
-import com.nian.shortlink.admin.dao.entity.User;
+import com.nian.shortlink.admin.domain.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
