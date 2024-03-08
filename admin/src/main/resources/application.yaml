@@ -7,10 +7,11 @@ spring:
       port: 6379
       password: lwl06021126
   datasource:
-    username: root
-    password: lwl06021126
-    url: jdbc:mysql://127.0.0.1:3306/shortlink?characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # ShardingSphere 对 Driver 自定义，实现分库分表等隐藏逻辑
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    # ShardingSphere 配置文件路径
+    url: jdbc:shardingsphere:classpath:shardingsphere-config.yaml
+
     hikari:
       connection-test-query: select 1
       connection-timeout: 20000
@@ -19,4 +20,4 @@ spring:
       minimum-idle: 5
 logging:
   level:
-   com.nian.shortlink: debug
+    com.nian.shortlink: debug
