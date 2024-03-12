@@ -19,6 +19,15 @@ public final class ResultUtils {
     }
 
     /**
+     * 构造返回信息的成功响应
+     */
+    public static Result<Void> success(String message) {
+        return new Result<Void>()
+                .setCode(Result.SUCCESS_CODE)
+                .setMessage(message);
+    }
+
+    /**
      * 构造带返回数据的成功响应
      */
     public static <T> Result<T> success(T data) {
@@ -27,6 +36,15 @@ public final class ResultUtils {
                 .setData(data);
     }
 
+    /**
+     * 构造带返回数据与信息的成功响应
+     */
+    public static <T> Result<T> success(T data, String message) {
+        return new Result<T>()
+                .setCode(Result.SUCCESS_CODE)
+                .setMessage(message)
+                .setData(data);
+    }
     /**
      * 构建服务端失败响应
      */
