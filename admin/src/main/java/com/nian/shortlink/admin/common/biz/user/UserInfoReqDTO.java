@@ -1,5 +1,6 @@
-package com.nian.shortlink.admin.domain.dto.user;
+package com.nian.shortlink.admin.common.biz.user;
 
+import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class UserInfoReqDTO {
     /**
      * 用户 ID
      */
+    @JSONField(name = "id")
     private String userId;
 
     /**
