@@ -1,21 +1,18 @@
 package com.nian.shortlink.admin.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nian.shortlink.admin.common.convention.exception.ClientException;
 import com.nian.shortlink.admin.domain.entity.Group;
+import com.nian.shortlink.admin.domain.vo.group.GroupQueryListRespVO;
 import com.nian.shortlink.admin.mapper.GroupMapper;
 import com.nian.shortlink.admin.service.IGroupService;
-import com.nian.shortlink.admin.utils.UserContext;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 短链接分组接口实现层
@@ -62,6 +59,17 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
                 .name(groupName)
                 .build();
         baseMapper.insert(group);
+    }
+
+    @Override
+    public List<GroupQueryListRespVO> queryList() {
+        LambdaQueryWrapper<Group> queryWrapper = Wrappers.lambdaQuery(Group.class)
+                .eq(Group::getDel_flag, 0)
+                .eq(Group::getUsername,null)
+                /*.isNull(Group::getUsername)*/
+                .orderByDesc(Group::getSortOrder, Group::getUpdate_time);
+        List<Group> groups = baseMapper.selectList(queryWrapper);
+        return BeanUtil.copyToList(groups, GroupQueryListRespVO.class);
     }
 
     private boolean hasGid(String username, String gid) {

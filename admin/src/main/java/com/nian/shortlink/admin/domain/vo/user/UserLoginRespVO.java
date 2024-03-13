@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.domain.vo;
+package com.nian.shortlink.admin.domain.vo.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

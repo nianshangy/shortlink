@@ -5,8 +5,8 @@ import com.nian.shortlink.admin.domain.dto.user.UserLoginReqDTO;
 import com.nian.shortlink.admin.domain.dto.user.UserRegisterReqDTO;
 import com.nian.shortlink.admin.domain.dto.user.UserUpdateReqDTO;
 import com.nian.shortlink.admin.domain.entity.User;
-import com.nian.shortlink.admin.domain.vo.UserLoginRespVO;
-import com.nian.shortlink.admin.domain.vo.UserRespVO;
+import com.nian.shortlink.admin.domain.vo.user.UserLoginRespVO;
+import com.nian.shortlink.admin.domain.vo.user.UserRespVO;
 
 /**
 * @author nianshang
