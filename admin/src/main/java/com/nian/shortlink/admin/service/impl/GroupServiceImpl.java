@@ -3,15 +3,17 @@ package com.nian.shortlink.admin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.nian.shortlink.admin.common.biz.user.UserContext;
+import com.nian.shortlink.admin.domain.dto.group.GroupUpdateReqDTO;
 import com.nian.shortlink.admin.domain.entity.Group;
 import com.nian.shortlink.admin.domain.vo.group.GroupQueryListRespVO;
 import com.nian.shortlink.admin.mapper.GroupMapper;
 import com.nian.shortlink.admin.service.IGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 /**
@@ -51,11 +53,11 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
         String gid;
         do {
             gid = RandomUtil.randomString(6);
-        } while (hasGid(null, gid));
+        } while (hasGid(/*UserContext.getUsername(),*/ gid));
         Group group = Group.builder()
                 .gid(gid)
                 .sortOrder(0)
-                .username(/*username*/null)
+                .username(UserContext.getUsername())
                 .name(groupName)
                 .build();
         baseMapper.insert(group);
@@ -65,18 +67,27 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
     public List<GroupQueryListRespVO> queryList() {
         LambdaQueryWrapper<Group> queryWrapper = Wrappers.lambdaQuery(Group.class)
                 .eq(Group::getDel_flag, 0)
-                .eq(Group::getUsername,null)
-                /*.isNull(Group::getUsername)*/
+                .eq(Group::getUsername, UserContext.getUsername())
                 .orderByDesc(Group::getSortOrder, Group::getUpdate_time);
         List<Group> groups = baseMapper.selectList(queryWrapper);
         return BeanUtil.copyToList(groups, GroupQueryListRespVO.class);
     }
 
-    private boolean hasGid(String username, String gid) {
+    @Override
+    public void updateGroup(GroupUpdateReqDTO requestParam) {
+        LambdaUpdateWrapper<Group> updateWrapper = Wrappers.lambdaUpdate(Group.class)
+                .eq(Group::getUsername, UserContext.getUsername())
+                .eq(Group::getGid, requestParam.getGid())
+                .eq(Group::getDel_flag, 0);
+        Group group = new Group();
+        group.setName(requestParam.getGroupName());
+        baseMapper.update(group,updateWrapper);
+    }
+
+    private boolean hasGid(String gid) {
         LambdaQueryWrapper<Group> queryWrapper = Wrappers.lambdaQuery(Group.class)
                 .eq(Group::getGid, gid)
-                //TODO 待设置用户名
-                .eq(Group::getUsername, null /*Optional.ofNullable(username).orElse(UserContext.getUsername())*/);
+                .eq(Group::getUsername, UserContext.getUsername()/*Optional.ofNullable(username).orElse(UserContext.getUsername())*/);
         Group hasGroupFlag = baseMapper.selectOne(queryWrapper);
         return hasGroupFlag != null;
     }

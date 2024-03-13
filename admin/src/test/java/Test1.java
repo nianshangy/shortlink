@@ -15,7 +15,7 @@ public class Test1 {
                 arr[0][len] = scores[i];
             }
         }*/
-        String a = "abcba";
+        /*String a = "abcba";
         StringBuilder stringBuilder = new StringBuilder(a);
         String string = stringBuilder.reverse().toString();
         int length = a.length();
@@ -33,7 +33,14 @@ public class Test1 {
             }else{
                 System.out.println("false");
             }
-        }
-
+        }*/
+        /*Scanner sc = new Scanner(System.in);
+        String code = sc.next();
+        String regx = "^([2][0][2][2])[0-9]{12}$";
+        if(code.matches(regx)){
+            System.out.println("true");
+        }else{
+            System.out.println("false");
+        }*/
     }
 }

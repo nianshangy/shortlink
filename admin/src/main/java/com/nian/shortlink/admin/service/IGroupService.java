@@ -1,6 +1,7 @@
 package com.nian.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nian.shortlink.admin.domain.dto.group.GroupUpdateReqDTO;
 import com.nian.shortlink.admin.domain.entity.Group;
 import com.nian.shortlink.admin.domain.vo.group.GroupQueryListRespVO;
 
@@ -22,4 +23,10 @@ public interface IGroupService extends IService<Group> {
      * @return 查询短链接分组集合返回参数
      */
     List<GroupQueryListRespVO> queryList();
+
+    /**
+     * 更新短链接分组名称
+     * @param requestParam 更新短链接分组名称参数
+     */
+    void updateGroup(GroupUpdateReqDTO requestParam);
 }

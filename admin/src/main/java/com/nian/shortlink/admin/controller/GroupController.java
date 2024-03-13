@@ -3,6 +3,7 @@ package com.nian.shortlink.admin.controller;
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.common.convention.result.ResultUtils;
 import com.nian.shortlink.admin.domain.dto.group.GroupSaveReqDTO;
+import com.nian.shortlink.admin.domain.dto.group.GroupUpdateReqDTO;
 import com.nian.shortlink.admin.domain.vo.group.GroupQueryListRespVO;
 import com.nian.shortlink.admin.service.IGroupService;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,14 @@ public class GroupController {
     @GetMapping("/api/short-link/v1/group")
     public Result<List<GroupQueryListRespVO>> queryList(){
         return ResultUtils.success(groupService.queryList(),"查询成功");
+    }
+
+    /**
+     * 更新短链接分组名称
+     */
+    @GetMapping("/api/short-link/v1/group")
+    public Result<Void> updateGroup(@RequestBody GroupUpdateReqDTO requestParam){
+        groupService.updateGroup(requestParam);
+        return ResultUtils.success();
     }
 }
