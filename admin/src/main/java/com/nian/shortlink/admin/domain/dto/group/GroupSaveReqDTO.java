@@ -7,6 +7,8 @@ import lombok.Data;
  */
 @Data
 public class GroupSaveReqDTO {
-
+    /**
+     * 短链接分组组名
+     */
     private String groupName;
 }

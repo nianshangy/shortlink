@@ -19,7 +19,7 @@ public class UserRespVO {
      * 真实姓名
      */
     @JsonSerialize(using = UsernameDesensitizationSerializer.class)
-    private String real_name;
+    private String realName;
 
     /**
      * 手机号

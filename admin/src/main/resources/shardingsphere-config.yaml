@@ -3,7 +3,7 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://127.0.0.1:3306/shortlink?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/shortlink?allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
     password: lwl06021126
 #  #定义多个数据源
@@ -62,7 +62,7 @@ rules:
             cipherColumn: mail
             encryptorName: common_encryptor
         # 是否按照密文字段查询
-        queryWithCipherColumn: false
+        queryWithCipherColumn: true
     # 加密算法
     encryptors:
       # 自定义加密算法名称

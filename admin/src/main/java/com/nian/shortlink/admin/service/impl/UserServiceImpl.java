@@ -39,6 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private final RBloomFilter<String> userRegisterCacheBloomFilter;
     private final RedissonClient redissonClient;
     private final StringRedisTemplate stringRedisTemplate;
+
     @Override
     public UserRespVO queryByUsername(String username) {
         User user = lambdaQuery().eq(User::getUsername, username).one();

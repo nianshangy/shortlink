@@ -43,7 +43,7 @@
 //     * @param <S>
 //     * @return 转换后对象
 //     */
-//    public static <T, S> T convert(S source, Class<T> clazz) {
+//    public static <T, S> T convert(S source, Clas<T> clazz) {
 //        return Optional.ofNullable(source)
 //                .map(each -> BEAN_MAPPER_BUILDER.map(each, clazz))
 //                .orElse(null);

@@ -1,4 +1,5 @@
 /*
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Test {
@@ -10,7 +11,7 @@ public class Test {
         }
         int[][] arr = new int[3][37];
         for (int i = 0; i < 37; i++) {
-            if(scores[i] > 80){
+            if (scores[i] > 80) {
                 int len = arr[0].length;
                 arr[0][len] = scores[i];
             }

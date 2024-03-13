@@ -15,7 +15,7 @@ public class UserActualRespVO {
     /**
      * 真实姓名
      */
-    private String real_name;
+    private String realName;
 
     /**
      * 手机号
