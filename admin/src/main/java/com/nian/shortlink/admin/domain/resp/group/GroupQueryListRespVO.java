@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.domain.vo.group;
+package com.nian.shortlink.admin.domain.resp.group;
 
 import lombok.Data;
 
@@ -21,4 +21,8 @@ public class GroupQueryListRespVO {
      * 创建分组用户名
      */
     private String username;
+    /**
+     * 排序id
+     */
+    private Integer sortOrder;
 }

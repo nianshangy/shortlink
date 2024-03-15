@@ -7,13 +7,17 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.admin.common.biz.user.UserContext;
-import com.nian.shortlink.admin.domain.dto.group.GroupUpdateReqDTO;
+import com.nian.shortlink.admin.common.convention.exception.ClientException;
+import com.nian.shortlink.admin.domain.req.group.GroupDeleteReqDTO;
+import com.nian.shortlink.admin.domain.req.group.GroupSortReqDTO;
+import com.nian.shortlink.admin.domain.req.group.GroupUpdateReqDTO;
 import com.nian.shortlink.admin.domain.entity.Group;
-import com.nian.shortlink.admin.domain.vo.group.GroupQueryListRespVO;
+import com.nian.shortlink.admin.domain.resp.group.GroupQueryListRespVO;
 import com.nian.shortlink.admin.mapper.GroupMapper;
 import com.nian.shortlink.admin.service.IGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 /**
@@ -81,7 +85,35 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
                 .eq(Group::getDel_flag, 0);
         Group group = new Group();
         group.setName(requestParam.getGroupName());
-        baseMapper.update(group,updateWrapper);
+        baseMapper.update(group, updateWrapper);
+    }
+
+    @Override
+    public void deleteGroup(GroupDeleteReqDTO requestParam) {
+        LambdaUpdateWrapper<Group> updateWrapper = Wrappers.lambdaUpdate(Group.class)
+                .eq(Group::getDel_flag, 0)
+                .eq(Group::getUsername, UserContext.getUsername())
+                .eq(Group::getGid, requestParam.getGid());
+        Group group = new Group();
+        group.setDel_flag(1);
+        int update = baseMapper.update(group, updateWrapper);
+        if (update <= 0) {
+            throw new ClientException("删除失败，数据已被删除或者数据不存在！");
+        }
+    }
+
+    @Override
+    public void sortGroup(List<GroupSortReqDTO> requestParam) {
+        requestParam.forEach(each -> {
+            Group group = new Group();
+            group.setSortOrder(each.getSortOrder());
+
+            LambdaUpdateWrapper<Group> updateWrapper = Wrappers.lambdaUpdate(Group.class)
+                    .eq(Group::getUsername, UserContext.getUsername())
+                    .eq(Group::getGid, each.getGid())
+                    .eq(Group::getDel_flag, 0);
+            baseMapper.update(group, updateWrapper);
+        });
     }
 
     private boolean hasGid(String gid) {
