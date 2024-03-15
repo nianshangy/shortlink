@@ -1,12 +1,12 @@
 package com.nian.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.nian.shortlink.admin.domain.dto.user.UserLoginReqDTO;
-import com.nian.shortlink.admin.domain.dto.user.UserRegisterReqDTO;
-import com.nian.shortlink.admin.domain.dto.user.UserUpdateReqDTO;
+import com.nian.shortlink.admin.domain.req.user.UserLoginReqDTO;
+import com.nian.shortlink.admin.domain.req.user.UserRegisterReqDTO;
+import com.nian.shortlink.admin.domain.req.user.UserUpdateReqDTO;
 import com.nian.shortlink.admin.domain.entity.User;
-import com.nian.shortlink.admin.domain.vo.user.UserLoginRespVO;
-import com.nian.shortlink.admin.domain.vo.user.UserRespVO;
+import com.nian.shortlink.admin.domain.resp.user.UserLoginRespVO;
+import com.nian.shortlink.admin.domain.resp.user.UserRespVO;
 
 /**
 * @author nianshang

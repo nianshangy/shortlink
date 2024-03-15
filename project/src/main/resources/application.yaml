@@ -1,2 +1,13 @@
 server:
   port: 8001
+spring:
+  data:
+    redis:
+      host: 101.42.140.176
+      port: 6379
+      password: lwl06021126
+  datasource:
+    username: root
+    password: lwl06021126
+    url: jdbc:mysql://127.0.0.1:3306/shortlink?characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
