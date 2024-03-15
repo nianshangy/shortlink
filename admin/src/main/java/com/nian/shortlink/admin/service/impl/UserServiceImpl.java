@@ -9,12 +9,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.admin.common.convention.errorcode.UserErrorCode;
 import com.nian.shortlink.admin.common.convention.exception.ClientException;
-import com.nian.shortlink.admin.domain.dto.user.UserLoginReqDTO;
-import com.nian.shortlink.admin.domain.dto.user.UserRegisterReqDTO;
-import com.nian.shortlink.admin.domain.dto.user.UserUpdateReqDTO;
+import com.nian.shortlink.admin.domain.req.user.UserLoginReqDTO;
+import com.nian.shortlink.admin.domain.req.user.UserRegisterReqDTO;
+import com.nian.shortlink.admin.domain.req.user.UserUpdateReqDTO;
 import com.nian.shortlink.admin.domain.entity.User;
-import com.nian.shortlink.admin.domain.vo.user.UserLoginRespVO;
-import com.nian.shortlink.admin.domain.vo.user.UserRespVO;
+import com.nian.shortlink.admin.domain.resp.user.UserLoginRespVO;
+import com.nian.shortlink.admin.domain.resp.user.UserRespVO;
 import com.nian.shortlink.admin.mapper.UserMapper;
 import com.nian.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -122,7 +122,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         //4.2将UUID作为key去保存到redis
         stringRedisTemplate.opsForHash().put("login_" +
                 requestParam.getUsername(),uuid, JSON.toJSONString(requestParam));
-        stringRedisTemplate.expire("login_" + requestParam.getUsername(),30L, TimeUnit.MINUTES);
+        stringRedisTemplate.expire("login_" + requestParam.getUsername(),30L, TimeUnit.DAYS);
         return new UserLoginRespVO(uuid);
 
         //下面这个方法会让一个用户可以无限次注册

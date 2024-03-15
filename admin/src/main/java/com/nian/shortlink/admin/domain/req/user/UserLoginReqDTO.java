@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.domain.dto.user;
+package com.nian.shortlink.admin.domain.req.user;
 
 import lombok.Data;
 

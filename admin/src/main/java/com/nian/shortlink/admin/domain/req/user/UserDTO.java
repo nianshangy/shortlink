@@ -1,12 +1,12 @@
-package com.nian.shortlink.admin.domain.dto.user;
+package com.nian.shortlink.admin.domain.req.user;
 
 import lombok.Data;
 
 /**
- * 用户注册请求参数
+ * 用户请求参数
  */
 @Data
-public class UserRegisterReqDTO {
+public class UserDTO {
     /**
      * 用户名
      */

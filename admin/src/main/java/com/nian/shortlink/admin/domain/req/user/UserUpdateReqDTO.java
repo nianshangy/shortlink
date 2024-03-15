@@ -1,12 +1,12 @@
-package com.nian.shortlink.admin.domain.dto.user;
+package com.nian.shortlink.admin.domain.req.user;
 
 import lombok.Data;
 
 /**
- * 用户请求参数
+ * 用户修改请求参数
  */
 @Data
-public class UserDTO {
+public class UserUpdateReqDTO {
     /**
      * 用户名
      */
@@ -30,5 +30,5 @@ public class UserDTO {
     /**
      * 邮箱
      */
-    private String mail;
+    String mail;
 }

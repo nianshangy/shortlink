@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.domain.vo.user;
+package com.nian.shortlink.admin.domain.resp.user;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nian.shortlink.admin.common.serialize.PhoneDesensitizationSerializer;
