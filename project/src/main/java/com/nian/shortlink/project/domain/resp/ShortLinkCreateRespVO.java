@@ -1,11 +1,9 @@
-package com.nian.shortlink.project.domain.dto.resp;
+package com.nian.shortlink.project.domain.resp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * 短链接创建响应参数
@@ -14,7 +12,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShortLinkCreateRespDTO {
+public class ShortLinkCreateRespVO {
 
     /**
      * 分组标识
