@@ -58,6 +58,7 @@ public class ShortLink extends DatabaseDO implements Serializable {
     /**
      * 分组标识
      */
+
     private String gid;
 
     /**
@@ -85,4 +86,9 @@ public class ShortLink extends DatabaseDO implements Serializable {
      */
     @TableField("`describe`")
     private String describe;
+
+    /**
+     * 网站标识
+     */
+    private String favicon;
 }

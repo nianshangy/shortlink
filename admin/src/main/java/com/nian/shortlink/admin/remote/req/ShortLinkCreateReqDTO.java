@@ -1,4 +1,4 @@
-package com.nian.shortlink.project.domain.dto.req;
+package com.nian.shortlink.admin.remote.req;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
@@ -46,4 +46,9 @@ public class ShortLinkCreateReqDTO {
      */
     @TableField("`describe`")
     private String describe;
+
+    /**
+     * 网站标识
+     */
+    private String favicon;
 }

@@ -2,17 +2,22 @@ package com.nian.shortlink.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.text.StrBuilder;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.project.common.convention.exception.ClientException;
-import com.nian.shortlink.project.domain.dto.req.ShortLinkCreateReqDTO;
-import com.nian.shortlink.project.domain.dto.resp.ShortLinkCreateRespDTO;
+import com.nian.shortlink.project.domain.req.ShortLinkCreateReqDTO;
+import com.nian.shortlink.project.domain.req.ShortLinkPageDTO;
+import com.nian.shortlink.project.domain.resp.ShortLinkCreateRespVO;
 import com.nian.shortlink.project.domain.entity.ShortLink;
+import com.nian.shortlink.project.domain.resp.ShortLinkPageRespVO;
 import com.nian.shortlink.project.mapper.ShortLinkMapper;
 import com.nian.shortlink.project.service.IShortLinkService;
 import com.nian.shortlink.project.utils.HashUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
 import org.redisson.api.RBloomFilter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -27,7 +32,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
 
     private final RBloomFilter<String> shortLinkCreateCacheBloomFilter;
     @Override
-    public ShortLinkCreateRespDTO shortLinkCreate(ShortLinkCreateReqDTO requestParam) {
+    public ShortLinkCreateRespVO createShortLink(ShortLinkCreateReqDTO requestParam) {
         String shortLinkSuffix = generatedSuffix(requestParam);
         String fullShortUrl = StrBuilder.create(requestParam.getDomain())
                 .append("/")
@@ -51,11 +56,22 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             throw new ClientException("短链接重复创建");
         }
         shortLinkCreateCacheBloomFilter.add(fullShortUrl);
-        return ShortLinkCreateRespDTO.builder()
+        return ShortLinkCreateRespVO.builder()
                 .fullShortUrl(shortLink.getFullShortUrl())
                 .gid(requestParam.getGid())
                 .originUrl(requestParam.getOriginUrl())
                 .build();
+    }
+
+    @Override
+    public IPage<ShortLinkPageRespVO> pageShortLink(ShortLinkPageDTO requestParam) {
+        LambdaQueryWrapper<ShortLink> queryWrapper = Wrappers.lambdaQuery(ShortLink.class)
+                .eq(ShortLink::getGid, requestParam.getGid())
+                .eq(ShortLink::getEnableStatus, 0)
+                .eq(ShortLink::getDel_flag, 0)
+                .orderByDesc(ShortLink::getCreate_time);
+        IPage<ShortLink> resultPage = baseMapper.selectPage(requestParam, queryWrapper);
+        return resultPage.convert(each -> BeanUtil.toBean(each, ShortLinkPageRespVO.class));
     }
 
     private String generatedSuffix(ShortLinkCreateReqDTO requestParam){
