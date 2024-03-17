@@ -20,10 +20,12 @@ public class ShortLinkController {
     private final IShortLinkService shortLinkServicew;
 
     /**
-     *
+     * 短链接创建
      */
     @PostMapping("/api/short-link/v1/create")
     public Result<ShortLinkCreateRespDTO> ShortLinkCreate(@RequestBody ShortLinkCreateReqDTO requestParam){
         return ResultUtils.success(shortLinkServicew.shortLinkCreate(requestParam),"创建短链接成功！");
     }
+
+
 }
