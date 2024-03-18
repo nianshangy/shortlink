@@ -18,6 +18,7 @@ import com.nian.shortlink.admin.domain.resp.user.UserRespVO;
 import com.nian.shortlink.admin.mapper.UserMapper;
 import com.nian.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -74,11 +75,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         try {
             if (lock.tryLock()) {
                 //2.新增到数据库
-                User user = new User();
-                BeanUtil.copyProperties(requestParam, user);
-                boolean save = save(user);
-                if (!save) {
-                    throw new ClientException(UserErrorCode.USER_SAVE_ERROR);
+                try {
+                    int insert = baseMapper.insert(BeanUtil.toBean(requestParam, User.class));
+                    if (insert < 1) {
+                        throw new ClientException(UserErrorCode.USER_SAVE_ERROR);
+                    }
+                } catch (DuplicatedIndexException e) {
+                    throw new ClientException(UserErrorCode.USER_EXIST);
                 }
                 //3.每次注册用户时需要去将用户名存储进布隆过滤器中
                 userRegisterCacheBloomFilter.add(requestParam.getUsername());
