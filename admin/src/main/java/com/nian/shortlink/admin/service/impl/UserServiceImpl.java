@@ -16,6 +16,7 @@ import com.nian.shortlink.admin.domain.entity.User;
 import com.nian.shortlink.admin.domain.resp.user.UserLoginRespVO;
 import com.nian.shortlink.admin.domain.resp.user.UserRespVO;
 import com.nian.shortlink.admin.mapper.UserMapper;
+import com.nian.shortlink.admin.service.IGroupService;
 import com.nian.shortlink.admin.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
@@ -40,6 +41,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private final RBloomFilter<String> userRegisterCacheBloomFilter;
     private final RedissonClient redissonClient;
     private final StringRedisTemplate stringRedisTemplate;
+    private final IGroupService groupService;
 
     @Override
     public UserRespVO queryByUsername(String username) {
@@ -85,6 +87,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 }
                 //3.每次注册用户时需要去将用户名存储进布隆过滤器中
                 userRegisterCacheBloomFilter.add(requestParam.getUsername());
+                groupService.groupSave("默认分组");
                 return;
             }
             throw new ClientException(UserErrorCode.USER_NAME_EXIST);
