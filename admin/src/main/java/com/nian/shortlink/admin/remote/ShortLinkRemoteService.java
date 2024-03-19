@@ -8,10 +8,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.remote.req.ShortLinkCreateReqDTO;
 import com.nian.shortlink.admin.remote.req.ShortLinkPageDTO;
+import com.nian.shortlink.admin.remote.resp.ShortLinkCountRespVO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkCreateRespVO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkPageRespVO;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +38,16 @@ public interface ShortLinkRemoteService {
         requestMap.put("gid",requestParam.getGid());
         requestMap.put("current",requestParam.getCurrent());
         requestMap.put("size",requestParam.getSize());
+        String resultPageStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/page", requestMap);
+        return JSON.parseObject(resultPageStr, new TypeReference<>() {});
+    }
+
+    /**
+     * 查询短链接分组内数量
+     */
+    default Result<List<ShortLinkCountRespVO>> listCountShortLink(List<String> requestParam){
+        Map<String,Object> requestMap = new HashMap<>();
+        requestMap.put("request",requestParam);
         String resultPageStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/page", requestMap);
         return JSON.parseObject(resultPageStr, new TypeReference<>() {});
     }

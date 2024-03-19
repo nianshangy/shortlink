@@ -3,15 +3,16 @@ package com.nian.shortlink.project.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.text.StrBuilder;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.project.common.convention.exception.ClientException;
+import com.nian.shortlink.project.domain.entity.ShortLink;
 import com.nian.shortlink.project.domain.req.ShortLinkCreateReqDTO;
 import com.nian.shortlink.project.domain.req.ShortLinkPageDTO;
+import com.nian.shortlink.project.domain.resp.ShortLinkCountRespVO;
 import com.nian.shortlink.project.domain.resp.ShortLinkCreateRespVO;
-import com.nian.shortlink.project.domain.entity.ShortLink;
 import com.nian.shortlink.project.domain.resp.ShortLinkPageRespVO;
 import com.nian.shortlink.project.mapper.ShortLinkMapper;
 import com.nian.shortlink.project.service.IShortLinkService;
@@ -21,6 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBloomFilter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 短链接接口实现层
@@ -72,6 +76,19 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .orderByDesc(ShortLink::getCreate_time);
         IPage<ShortLink> resultPage = baseMapper.selectPage(requestParam, queryWrapper);
         return resultPage.convert(each -> BeanUtil.toBean(each, ShortLinkPageRespVO.class));
+    }
+
+    @Override
+    public List<ShortLinkCountRespVO> listCountShortLink(List<String> requestParam) {
+        //select gid,count(*) from t_link in (gid) group by gid order by create_time desc;
+        QueryWrapper<ShortLink> queryWrapper = Wrappers.query(new ShortLink())
+                .select("gid as gid ,count(*) as shortLinkCount")
+                .in("gid", requestParam)
+                .eq("enable_status", 0)
+                .eq("del_flag", 0)
+                .groupBy("gid");
+        List<Map<String, Object>> shortLinkList = baseMapper.selectMaps(queryWrapper);
+        return BeanUtil.copyToList(shortLinkList, ShortLinkCountRespVO.class);
     }
 
     private String generatedSuffix(ShortLinkCreateReqDTO requestParam){
