@@ -46,6 +46,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .fullShortUrl(fullShortUrl)
                 .shortUri(shortLinkSuffix)
                 .createdType(requestParam.getCreatedType())
+                .enableStatus(0)
+                .favicon(requestParam.getFavicon())
                 .describe(requestParam.getDescribe())
                 .originUrl(requestParam.getOriginUrl())
                 .domain(requestParam.getDomain())

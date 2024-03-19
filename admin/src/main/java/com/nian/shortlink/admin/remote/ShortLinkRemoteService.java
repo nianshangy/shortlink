@@ -47,8 +47,8 @@ public interface ShortLinkRemoteService {
      */
     default Result<List<ShortLinkCountRespVO>> listCountShortLink(List<String> requestParam){
         Map<String,Object> requestMap = new HashMap<>();
-        requestMap.put("request",requestParam);
-        String resultPageStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/page", requestMap);
-        return JSON.parseObject(resultPageStr, new TypeReference<>() {});
+        requestMap.put("requestParam",requestParam);
+        String resultCountStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/count", requestMap);
+        return JSON.parseObject(resultCountStr, new TypeReference<>() {});
     }
 }

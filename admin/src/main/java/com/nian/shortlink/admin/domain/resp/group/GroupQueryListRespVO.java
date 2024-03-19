@@ -21,4 +21,9 @@ public class GroupQueryListRespVO {
      * 排序id
      */
     private Integer sortOrder;
+
+    /**
+     * 短链接数量
+     */
+    private Integer shortLinkCount;
 }

@@ -8,17 +8,21 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.admin.common.biz.user.UserContext;
 import com.nian.shortlink.admin.common.convention.exception.ClientException;
+import com.nian.shortlink.admin.domain.entity.Group;
 import com.nian.shortlink.admin.domain.req.group.GroupDeleteReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupSortReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupUpdateReqDTO;
-import com.nian.shortlink.admin.domain.entity.Group;
 import com.nian.shortlink.admin.domain.resp.group.GroupQueryListRespVO;
 import com.nian.shortlink.admin.mapper.GroupMapper;
+import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
+import com.nian.shortlink.admin.remote.resp.ShortLinkCountRespVO;
 import com.nian.shortlink.admin.service.IGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 短链接分组接口实现层
@@ -27,6 +31,8 @@ import java.util.List;
 @RequiredArgsConstructor
 
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements IGroupService {
+
+    ShortLinkRemoteService shortLinkRemoteService= new ShortLinkRemoteService(){};
 
     @Override
     public void groupSave(String groupName) {
@@ -74,7 +80,13 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
                 .eq(Group::getUsername, UserContext.getUsername())
                 .orderByDesc(Group::getSortOrder, Group::getUpdate_time);
         List<Group> groups = baseMapper.selectList(queryWrapper);
-        return BeanUtil.copyToList(groups, GroupQueryListRespVO.class);
+        List<GroupQueryListRespVO> groupQueryListRespVOList = BeanUtil.copyToList(groups, GroupQueryListRespVO.class);
+        List<ShortLinkCountRespVO> linkCountRespDTO = shortLinkRemoteService.listCountShortLink(groups.stream().map(Group::getGid).toList()).getData();
+        Map<String, Integer> counts = linkCountRespDTO.stream().collect(Collectors.toMap(ShortLinkCountRespVO::getGid, ShortLinkCountRespVO::getShortLinkCount));
+        groupQueryListRespVOList.forEach(each -> {
+            each.setShortLinkCount(counts.get(each.getGid()));
+        });
+        return groupQueryListRespVOList;
     }
 
     @Override
