@@ -21,6 +21,13 @@ public interface IGroupService extends IService<Group> {
     void groupSave(String groupName);
 
     /**
+     * 新增短链接分组
+     * @param username 用户名
+     * @param groupName 短链接组名
+     */
+    void groupSave(String username,String groupName);
+
+    /**
      * 查询短链接分组集合
      * @return 查询短链接分组集合返回参数
      */

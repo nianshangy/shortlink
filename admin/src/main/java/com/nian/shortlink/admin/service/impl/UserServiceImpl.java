@@ -87,7 +87,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 }
                 //3.每次注册用户时需要去将用户名存储进布隆过滤器中
                 userRegisterCacheBloomFilter.add(requestParam.getUsername());
-                groupService.groupSave("默认分组");
+                groupService.groupSave(requestParam.getUsername() ,"默认分组");
                 return;
             }
             throw new ClientException(UserErrorCode.USER_NAME_EXIST);

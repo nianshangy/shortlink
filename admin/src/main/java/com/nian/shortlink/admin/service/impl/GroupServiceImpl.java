@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -60,14 +61,19 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
         } finally {
             lock.unlock();
         }*/
+        groupSave(UserContext.getUsername(),groupName);
+    }
+
+    @Override
+    public void groupSave(String username, String groupName) {
         String gid;
         do {
             gid = RandomUtil.randomString(6);
-        } while (hasGid(/*UserContext.getUsername(),*/ gid));
+        } while (hasGid(username,gid));
         Group group = Group.builder()
                 .gid(gid)
                 .sortOrder(0)
-                .username(UserContext.getUsername())
+                .username(username)
                 .name(groupName)
                 .build();
         baseMapper.insert(group);
@@ -128,10 +134,10 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
         });
     }
 
-    private boolean hasGid(String gid) {
+    private boolean hasGid(String username,String gid) {
         LambdaQueryWrapper<Group> queryWrapper = Wrappers.lambdaQuery(Group.class)
                 .eq(Group::getGid, gid)
-                .eq(Group::getUsername, UserContext.getUsername()/*Optional.ofNullable(username).orElse(UserContext.getUsername())*/);
+                .eq(Group::getUsername, Optional.ofNullable(username).orElse(UserContext.getUsername()));
         Group hasGroupFlag = baseMapper.selectOne(queryWrapper);
         return hasGroupFlag != null;
     }
