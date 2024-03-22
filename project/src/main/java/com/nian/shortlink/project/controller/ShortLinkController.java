@@ -5,10 +5,13 @@ import com.nian.shortlink.project.common.convention.result.Result;
 import com.nian.shortlink.project.common.convention.result.ResultUtils;
 import com.nian.shortlink.project.domain.req.ShortLinkCreateReqDTO;
 import com.nian.shortlink.project.domain.req.ShortLinkPageDTO;
+import com.nian.shortlink.project.domain.req.ShortLinkUpdateReqDTO;
 import com.nian.shortlink.project.domain.resp.ShortLinkCountRespVO;
 import com.nian.shortlink.project.domain.resp.ShortLinkCreateRespVO;
 import com.nian.shortlink.project.domain.resp.ShortLinkPageRespVO;
 import com.nian.shortlink.project.service.IShortLinkService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +26,30 @@ public class ShortLinkController {
 
     private final IShortLinkService shortLinkService;
 
+
+    /**
+     * 短链接跳转
+     */
+    @GetMapping("/{short-url}")
+    public void restoreUrl(@PathVariable("short-url")String shortUrl, HttpServletRequest request, HttpServletResponse response){
+        shortLinkService.restoreUrl(shortUrl,request,response);
+    }
+
     /**
      * 创建短链接
      */
     @PostMapping("/api/short-link/v1/create")
     public Result<ShortLinkCreateRespVO> createShortLink(@RequestBody ShortLinkCreateReqDTO requestParam){
         return ResultUtils.success(shortLinkService.createShortLink(requestParam),"创建短链接成功！");
+    }
+
+    /**
+     * 修改短链接
+     */
+    @PostMapping ("/api/short-link/v1/update")
+    public Result<Void> updateShortLink(@RequestBody ShortLinkUpdateReqDTO requestParam){
+        shortLinkService.updateShortLink(requestParam);
+        return ResultUtils.success("修改短链接成功！");
     }
 
     /**
