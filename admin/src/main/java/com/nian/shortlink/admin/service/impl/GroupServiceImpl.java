@@ -82,9 +82,9 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
     @Override
     public List<GroupQueryListRespVO> queryList() {
         LambdaQueryWrapper<Group> queryWrapper = Wrappers.lambdaQuery(Group.class)
-                .eq(Group::getDel_flag, 0)
+                .eq(Group::getDelFlag, 0)
                 .eq(Group::getUsername, UserContext.getUsername())
-                .orderByDesc(Group::getSortOrder, Group::getUpdate_time);
+                .orderByDesc(Group::getSortOrder, Group::getUpdateTime);
         List<Group> groups = baseMapper.selectList(queryWrapper);
         List<GroupQueryListRespVO> groupQueryListRespVOList = BeanUtil.copyToList(groups, GroupQueryListRespVO.class);
         List<ShortLinkCountRespVO> linkCountRespDTO = shortLinkRemoteService.listCountShortLink(groups.stream().map(Group::getGid).toList()).getData();
@@ -100,7 +100,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
         LambdaUpdateWrapper<Group> updateWrapper = Wrappers.lambdaUpdate(Group.class)
                 .eq(Group::getUsername, UserContext.getUsername())
                 .eq(Group::getGid, requestParam.getGid())
-                .eq(Group::getDel_flag, 0);
+                .eq(Group::getDelFlag, 0);
         Group group = new Group();
         group.setName(requestParam.getGroupName());
         baseMapper.update(group, updateWrapper);
@@ -109,11 +109,11 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
     @Override
     public void deleteGroup(GroupDeleteReqDTO requestParam) {
         LambdaUpdateWrapper<Group> updateWrapper = Wrappers.lambdaUpdate(Group.class)
-                .eq(Group::getDel_flag, 0)
+                .eq(Group::getDelFlag, 0)
                 .eq(Group::getUsername, UserContext.getUsername())
                 .eq(Group::getGid, requestParam.getGid());
         Group group = new Group();
-        group.setDel_flag(1);
+        group.setDelFlag(1);
         int update = baseMapper.update(group, updateWrapper);
         if (update <= 0) {
             throw new ClientException("删除失败，数据已被删除或者数据不存在！");
@@ -129,7 +129,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
             LambdaUpdateWrapper<Group> updateWrapper = Wrappers.lambdaUpdate(Group.class)
                     .eq(Group::getUsername, UserContext.getUsername())
                     .eq(Group::getGid, each.getGid())
-                    .eq(Group::getDel_flag, 0);
+                    .eq(Group::getDelFlag, 0);
             baseMapper.update(group, updateWrapper);
         });
     }

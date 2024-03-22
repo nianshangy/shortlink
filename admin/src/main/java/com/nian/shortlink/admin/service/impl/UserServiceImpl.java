@@ -112,7 +112,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
                 .eq(User::getUsername, requestParam.getUsername())
                 .eq(User::getPassword, requestParam.getPassword())
-                .eq(User::getDel_flag, 0);
+                .eq(User::getDelFlag, 0);
         //2.判断用户是否存在
         if(queryWrapper == null){
             throw new ClientException(UserErrorCode.USER_NULL);

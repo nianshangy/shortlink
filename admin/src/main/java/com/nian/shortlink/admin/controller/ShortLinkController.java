@@ -2,9 +2,11 @@ package com.nian.shortlink.admin.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.admin.common.convention.result.Result;
+import com.nian.shortlink.admin.common.convention.result.ResultUtils;
 import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
 import com.nian.shortlink.admin.remote.req.ShortLinkCreateReqDTO;
 import com.nian.shortlink.admin.remote.req.ShortLinkPageDTO;
+import com.nian.shortlink.admin.remote.req.ShortLinkUpdateReqDTO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkCountRespVO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkCreateRespVO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkPageRespVO;
@@ -32,6 +34,15 @@ public class ShortLinkController {
     }
 
     /**
+     * 修改短链接
+     */
+    @PutMapping("/api/short-link/admin/v1/update")
+    public Result<Void> updateShortLink(@RequestBody ShortLinkUpdateReqDTO requestParam){
+        shortLinkRemoteService.updateShortLink(requestParam);
+        return ResultUtils.success("修改短链接成功！");
+    }
+
+    /**
      * 短链接分页查寻
      */
     @GetMapping("/api/short-link/admin/v1/page")
@@ -42,7 +53,7 @@ public class ShortLinkController {
     /**
      * 查询短链接分组内数量
      */
-    @GetMapping("/api/short-link/v1/count")
+    @GetMapping("/api/short-link/admin/v1/count")
     public Result<List<ShortLinkCountRespVO>> listCountShortLink(@RequestParam("requestParam") List<String> requestParam) {
         return shortLinkRemoteService.listCountShortLink(requestParam);
     }

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.remote.req.ShortLinkCreateReqDTO;
 import com.nian.shortlink.admin.remote.req.ShortLinkPageDTO;
+import com.nian.shortlink.admin.remote.req.ShortLinkUpdateReqDTO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkCountRespVO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkCreateRespVO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkPageRespVO;
@@ -31,9 +32,16 @@ public interface ShortLinkRemoteService {
     }
 
     /**
+     * 修改短链接
+     */
+    default void updateShortLink(ShortLinkUpdateReqDTO requestParam){
+       HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/update",JSON.toJSONString(requestParam));
+    }
+
+    /**
      * 短链接分页查寻
      */
-    default Result<IPage<ShortLinkPageRespVO>> pageShortLink(ShortLinkPageDTO requestParam){
+     default Result<IPage<ShortLinkPageRespVO>> pageShortLink(ShortLinkPageDTO requestParam){
         Map<String,Object> requestMap = new HashMap<>();
         requestMap.put("gid",requestParam.getGid());
         requestMap.put("current",requestParam.getCurrent());
