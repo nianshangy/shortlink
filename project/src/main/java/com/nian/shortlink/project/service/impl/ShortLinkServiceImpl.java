@@ -51,14 +51,13 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Override
     public void restoreUrl(String shortUrl, HttpServletRequest request, HttpServletResponse response) {
         //获取短链接网站的域名
-        String scheme = request.getScheme();
         String serverName = request.getServerName();
         /*String serverPort = Optional.of(request.getServerPort())
                 .filter(each -> !Objects.equals(each, 80))
                 .map(String::valueOf)
                 .map(each -> ":" + each)
                 .orElse("");*/
-        String fullShortUrl = scheme + "://" + serverName + "/" + shortUrl;
+        String fullShortUrl = serverName + "/" + shortUrl;
         //1.先去goto表中查询当前fullShortUrl所在的gid
         LambdaQueryWrapper<ShortLinkGoto> linkGotoQueryWrapper  = Wrappers.lambdaQuery(ShortLinkGoto.class)
                 .eq(ShortLinkGoto::getFullShortUrl, fullShortUrl);
