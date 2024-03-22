@@ -15,17 +15,17 @@ public class DatabaseDO {
      * 创建时间
      */
     @TableField(value = "create_time",fill = FieldFill.INSERT)
-    private Date create_time;
+    private Date createTime;
 
     /**
      * 修改时间
      */
     @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)
-    private Date update_time;
+    private Date updateTime;
 
     /**
      * 删除标识 0：未删除 1：已删除
      */
     @TableField(value = "del_flag",fill = FieldFill.INSERT)
-    private Integer del_flag;
+    private Integer delFlag;
 }
