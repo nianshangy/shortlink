@@ -59,4 +59,12 @@ public interface ShortLinkRemoteService {
         String resultCountStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/count", requestMap);
         return JSON.parseObject(resultCountStr, new TypeReference<>() {});
     }
+
+    /**
+     * 根据 url 查询网站标题
+     */
+    default Result<String> getTitleByUrl(String url){
+        String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/title?url=" + url);
+        return JSON.parseObject(resultStr, new TypeReference<>() {});
+    }
 }
