@@ -120,7 +120,12 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 response.sendRedirect("/page/notfound");
                 return;
             }
-            stringRedisTemplate.opsForValue().set(String.format(GOTO_SHORT_LINK_KEY,fullShortUrl),shortLink.getOriginUrl());
+            stringRedisTemplate.opsForValue().set(
+                    String.format(GOTO_SHORT_LINK_KEY,fullShortUrl),
+                    shortLink.getOriginUrl(),
+                    LinkUtil.getShortLinkCacheValidDate(shortLink.getValidDate()),
+                    TimeUnit.MILLISECONDS
+            );
             response.sendRedirect(shortLink.getOriginUrl());
         } finally {
             lock.unlock();
