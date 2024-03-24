@@ -28,6 +28,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -36,6 +40,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -70,14 +76,14 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         String fullShortUrl = serverName + "/" + shortUrl;
 
         //先查询缓存，判断缓存中是否存在
-        String originalUrl = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY,fullShortUrl));
-        if(StrUtil.isNotBlank(originalUrl)) {
+        String originalUrl = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY, fullShortUrl));
+        if (StrUtil.isNotBlank(originalUrl)) {
             response.sendRedirect(originalUrl);
             return;
         }
 
         boolean contains = shortLinkCreateCacheBloomFilter.contains(fullShortUrl);
-        if (!contains){
+        if (!contains) {
             response.sendRedirect("/page/notfound");
             return;
         }
@@ -95,8 +101,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         lock.lock();
         try {
             //里面再写个双重判定，防止并发线程进来时所有线程均获取锁去查询数据库
-            originalUrl = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY,fullShortUrl));
-            if(StrUtil.isNotBlank(originalUrl)) {
+            originalUrl = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY, fullShortUrl));
+            if (StrUtil.isNotBlank(originalUrl)) {
                 response.sendRedirect(originalUrl);
                 return;
             }
@@ -121,7 +127,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 return;
             }
             stringRedisTemplate.opsForValue().set(
-                    String.format(GOTO_SHORT_LINK_KEY,fullShortUrl),
+                    String.format(GOTO_SHORT_LINK_KEY, fullShortUrl),
                     shortLink.getOriginUrl(),
                     LinkUtil.getShortLinkCacheValidDate(shortLink.getValidDate()),
                     TimeUnit.MILLISECONDS
@@ -145,7 +151,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .shortUri(shortLinkSuffix)
                 .createdType(requestParam.getCreatedType())
                 .enableStatus(0)
-                .favicon(requestParam.getFavicon())
+                .favicon(getFavicon(requestParam.getOriginUrl()))
                 .describe(requestParam.getDescribe())
                 .originUrl(requestParam.getOriginUrl())
                 .domain(requestParam.getDomain())
@@ -165,11 +171,11 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             throw new ClientException("短链接重复创建");
         }
         stringRedisTemplate.opsForValue().set(
-                String.format(GOTO_SHORT_LINK_KEY,fullShortUrl),
+                String.format(GOTO_SHORT_LINK_KEY, fullShortUrl),
                 requestParam.getOriginUrl(),
                 LinkUtil.getShortLinkCacheValidDate(requestParam.getValidDate()),
                 TimeUnit.MILLISECONDS
-                );
+        );
         shortLinkCreateCacheBloomFilter.add(fullShortUrl);
         return ShortLinkCreateRespVO.builder()
                 .fullShortUrl("http://" + shortLink.getFullShortUrl())
@@ -200,16 +206,16 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             ShortLink shortLink = ShortLink.builder()
                     .domain(hasShortLink.getDomain())
                     .shortUri(hasShortLink.getShortUri())
+                    .favicon(hasShortLink.getFavicon())
                     .createdType(hasShortLink.getCreatedType())
                     .gid(requestParam.getGid())
                     .originUrl(requestParam.getOriginUrl())
                     .describe(requestParam.getDescribe())
                     .validDateType(requestParam.getValidDateType())
                     .validDate(requestParam.getValidDate())
-                    .favicon(requestParam.getFavicon())
                     .build();
-            baseMapper.update(shortLink,updateWrapper);
-        }else{
+            baseMapper.update(shortLink, updateWrapper);
+        } else {
             LambdaUpdateWrapper<ShortLink> linkUpdateWrapper = Wrappers.lambdaUpdate(ShortLink.class)
                     .eq(ShortLink::getFullShortUrl, requestParam.getFullShortUrl())
                     .eq(ShortLink::getGid, hasShortLink.getGid())
@@ -222,6 +228,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .domain(hasShortLink.getDomain())
                     .originUrl(requestParam.getOriginUrl())
                     .gid(requestParam.getGid())
+                    .favicon(hasShortLink.getFavicon())
                     .createdType(hasShortLink.getCreatedType())
                     .validDateType(requestParam.getValidDateType())
                     .validDate(requestParam.getValidDate())
@@ -229,7 +236,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .shortUri(hasShortLink.getShortUri())
                     .enableStatus(hasShortLink.getEnableStatus())
                     .fullShortUrl(hasShortLink.getFullShortUrl())
-                    .favicon(requestParam.getFavicon())
                     .build();
             baseMapper.insert(shortLinkDO);
         }
@@ -279,5 +285,23 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             customGenerateCount++;
         }
         return shortLinkUri;
+    }
+
+    @SneakyThrows
+    private String getFavicon(String url) {
+        URL tagetUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) tagetUrl.openConnection();
+        connection.setRequestMethod("GET");
+        connection.connect();
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            Document document = Jsoup.connect(url).get();
+            Elements linkElements = document.select("link[rel~=(?i)^(shortcut )?icon]");
+            if (!linkElements.isEmpty()) {
+                Element linkElement = linkElements.first();
+                return linkElement.absUrl("href");
+            }
+        }
+        return null;
     }
 }
