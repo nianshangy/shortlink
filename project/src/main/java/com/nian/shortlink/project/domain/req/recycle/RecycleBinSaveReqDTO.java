@@ -1,4 +1,4 @@
-package com.nian.shortlink.project.domain.req;
+package com.nian.shortlink.project.domain.req.recycle;
 
 import lombok.Data;
 
