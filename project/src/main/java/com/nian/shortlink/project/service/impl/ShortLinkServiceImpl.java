@@ -74,7 +74,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .map(each -> ":" + each)
                 .orElse("");*/
         String fullShortUrl = serverName + "/" + shortUrl;
-
         //先查询缓存，判断缓存中是否存在
         String originalUrl = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY, fullShortUrl));
         if (StrUtil.isNotBlank(originalUrl)) {
@@ -289,6 +288,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
 
     @SneakyThrows
     private String getFavicon(String url) {
+        //TODO 存入OSS服务
         URL tagetUrl = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) tagetUrl.openConnection();
         connection.setRequestMethod("GET");
