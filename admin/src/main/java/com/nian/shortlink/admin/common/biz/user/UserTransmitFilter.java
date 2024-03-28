@@ -4,20 +4,13 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
 import com.nian.shortlink.admin.common.convention.exception.ClientException;
-import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.common.convention.result.ResultUtils;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -63,6 +56,7 @@ public class UserTransmitFilter implements Filter {
                     return;
                 }
                 UserInfoReqDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoReqDTO.class);
+                userInfoDTO.setToken(token);
                 UserContext.setUser(userInfoDTO);
             }
         }

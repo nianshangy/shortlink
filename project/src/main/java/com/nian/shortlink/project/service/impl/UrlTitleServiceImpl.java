@@ -15,7 +15,6 @@ import java.net.URL;
 @Service
 public class UrlTitleServiceImpl implements IUrlTitleService {
 
-
     @SneakyThrows
     @Override
     public String getTitleByUrl(String url){
