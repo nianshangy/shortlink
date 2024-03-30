@@ -1,20 +1,45 @@
+/*import java.util.Scanner;
+
 public class ScoreApplication {
+
     public static void main(String[] args) {
-        int[] ints = new int[]{80,21,34,65,77,98};
-        ScoreHelper scoreHelper = new ScoreHelper(ints);
-        scoreHelper.avg();
-    }
+
+        Scanner scanner = new Scanner(System.in);
+        int capacity = scanner.nextInt();
+        Queue queue = new Queue(capacity);
+
+        queue.put(scanner.nextInt());
+
+        queue.put(scanner.nextInt());
+
+        queue.put(scanner.nextInt());
+
+        queue.get();
+
+        queue.get();
+
+        queue.put(scanner.nextInt());
+
+        queue.put(scanner.nextInt());
+
+        queue.print();*/
+/*    }
 }
 
-class ScoreHelper{
-    int[] scores;
+class Queue {
+    int capacity;
+    int value;
+    Queue next;
 
-    public ScoreHelper(int[] scores){
-        this.scores = scores;
+    public void put(int value){
+
     }
-    public ScoreHelper(){
+
+    public int get(){
+
     }
-    public double avg(){
-        return 60;
+
+    public void print(){
+
     }
-}
+}*/
