@@ -3,7 +3,7 @@ server:
 spring:
   data:
     redis:
-      host: 101.42.140.176
+      host: 47.97.215.156
       port: 6379
       password: lwl06021126
   datasource:
