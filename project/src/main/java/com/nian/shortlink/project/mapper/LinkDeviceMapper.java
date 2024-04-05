@@ -2,9 +2,13 @@ package com.nian.shortlink.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nian.shortlink.project.domain.entity.LinkDeviceStats;
+import com.nian.shortlink.project.domain.req.ShortLinkStatsReqDTO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * 短链接监控设备持久层
@@ -20,4 +24,20 @@ public interface LinkDeviceMapper extends BaseMapper<LinkDeviceStats> {
             "ON DUPLICATE KEY UPDATE cnt = cnt +  #{linkDeviceStats.cnt};")
     void shortLinkDeviceState(@Param("linkDeviceStats") LinkDeviceStats linkDeviceStats);
 
+    /**
+     * 根据短链接获取指定日期内设备监控数据
+     */
+    @Select("SELECT " +
+            "   device, " +
+            "   SUM(cnt) as cnt " +
+            "FROM " +
+            "   t_link_device_stats " +
+            "WHERE " +
+            "   full_short_url = #{param.fullShortUrl}" +
+            "   AND gid = #{param.gid}" +
+            "   AND date BETWEEN #{param.startDate} AND #{param.endDate}" +
+            "   AND del_flag = 0 " +
+            "GROUP BY " +
+            "    full_short_url, gid, device;")
+    List<LinkDeviceStats> listDeviceStatsByShortLink(@Param("param") ShortLinkStatsReqDTO requestParam);
 }
