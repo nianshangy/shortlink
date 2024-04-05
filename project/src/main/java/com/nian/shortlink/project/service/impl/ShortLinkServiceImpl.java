@@ -355,10 +355,10 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         String localeResultStr = HttpUtil.get(AMAP_REMOTE_URL, localeParamMap);
         JSONObject localeResultObj = JSONUtil.parseObj(localeResultStr);
         String infoCode = localeResultObj.getStr("infocode");
+        String actualProvince = localeResultObj.getStr("province");
+        String actualCity = localeResultObj.getStr("city");
+        String actualAdcode = localeResultObj.getStr("adcode");
         if (StrUtil.isNotBlank(infoCode) && StrUtil.equals(infoCode, "10000")) {
-            String actualProvince = localeResultObj.getStr("province");
-            String actualCity = localeResultObj.getStr("city");
-            String actualAdcode = localeResultObj.getStr("adcode");
             LinkLocaleStats linkLocaleStats = LinkLocaleStats.builder()
                     .fullShortUrl(fullShortUrl)
                     .gid(gid)
@@ -425,7 +425,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .browser(browser)
                 .os(os)
                 .network(network)
-                .locale("中国")
+                .locale(StrUtil.join("-","中国",actualProvince,actualCity))
                 .device(device)
                 .build();
         linkAccessLogsMapper.insert(linkAccessLogs);
