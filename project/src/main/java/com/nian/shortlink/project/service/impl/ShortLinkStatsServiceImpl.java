@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 短链接监控接口实现层
+ * 短链接监控统计接口实现层
  */
 @Service
 @RequiredArgsConstructor
