@@ -1,12 +1,20 @@
 package com.nian.shortlink.project.domain.req;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
- * 短链接监控统计请求参数
+ * 获取用户信息是否新老访客
  */
 @Data
-public class ShortLinkStatsReqDTO {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class JudgeUvTypeReqDTO {
     /**
      * 完整短链接
      */
@@ -26,4 +34,9 @@ public class ShortLinkStatsReqDTO {
      * 结束日期
      */
     private String endDate;
+
+    /**
+     * 用户列表
+     */
+    private List<String> userList;
 }

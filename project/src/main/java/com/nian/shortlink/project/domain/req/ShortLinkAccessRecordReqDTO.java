@@ -1,12 +1,14 @@
 package com.nian.shortlink.project.domain.req;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.nian.shortlink.project.domain.entity.LinkAccessLogs;
 import lombok.Data;
 
 /**
- * 短链接监控统计请求参数
+ * 访问单个短链接的访问记录监控数据请求参数
  */
 @Data
-public class ShortLinkStatsReqDTO {
+public class ShortLinkAccessRecordReqDTO extends Page<LinkAccessLogs> {
     /**
      * 完整短链接
      */

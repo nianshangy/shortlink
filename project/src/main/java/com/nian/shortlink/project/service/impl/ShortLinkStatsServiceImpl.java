@@ -1,10 +1,16 @@
 package com.nian.shortlink.project.service.impl;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.nian.shortlink.project.domain.entity.*;
+import com.nian.shortlink.project.domain.req.JudgeUvTypeReqDTO;
+import com.nian.shortlink.project.domain.req.ShortLinkAccessRecordReqDTO;
 import com.nian.shortlink.project.domain.req.ShortLinkStatsReqDTO;
 import com.nian.shortlink.project.domain.resp.*;
 import com.nian.shortlink.project.mapper.*;
@@ -234,5 +240,40 @@ public class ShortLinkStatsServiceImpl implements IShortLinkStatsService {
                 .deviceStats(deviceStats)
                 .networkStats(networkStats)
                 .build();
+    }
+
+    @Override
+    public IPage<ShortLinkAccessRecordRespVO> shortLinkStatsAccessRecord(ShortLinkAccessRecordReqDTO requestParam) {
+        //查询该短链接下的所有日志记录
+        LambdaQueryWrapper<LinkAccessLogs> queryWrapper = Wrappers.lambdaQuery(LinkAccessLogs.class)
+                .eq(LinkAccessLogs::getFullShortUrl, requestParam.getFullShortUrl())
+                .eq(LinkAccessLogs::getGid, requestParam.getGid())
+                .eq(LinkAccessLogs::getDelFlag, 0)
+                .between(LinkAccessLogs::getCreateTime, requestParam.getStartDate(), requestParam.getEndDate())
+                .orderByDesc(LinkAccessLogs::getCreateTime);
+        IPage<LinkAccessLogs> shortLinkAccessRecordIPage = linkAccessLogsMapper.selectPage(requestParam, queryWrapper);
+        IPage<ShortLinkAccessRecordRespVO> actualResult = shortLinkAccessRecordIPage.convert(each -> BeanUtil.toBean(each, ShortLinkAccessRecordRespVO.class));
+        List<String> userList = actualResult.getRecords().stream()
+                .map(ShortLinkAccessRecordRespVO::getUser)
+                .toList();
+        JudgeUvTypeReqDTO judgeUvTypeReqDTO = JudgeUvTypeReqDTO.builder()
+                .fullShortUrl(requestParam.getFullShortUrl())
+                .gid(requestParam.getGid())
+                .startDate(requestParam.getStartDate())
+                .endDate(requestParam.getEndDate())
+                .userList(userList)
+                .build();
+        List<HashMap<String, Object>> uvTypes = linkAccessLogsMapper.listUvTypesByShortLink(judgeUvTypeReqDTO);
+        //根据user去判断访客类型（为新老访客）
+        actualResult.getRecords().forEach(each -> {
+            String uvType = uvTypes.stream()
+                    .filter(item -> Objects.equals(item.get("user"), each.getUser()))
+                    .findFirst()
+                    .map(item -> item.get("uvType"))
+                    .map(Object::toString)
+                    .orElse("老访客");
+            each.setUvType(uvType);
+        });
+        return actualResult;
     }
 }
