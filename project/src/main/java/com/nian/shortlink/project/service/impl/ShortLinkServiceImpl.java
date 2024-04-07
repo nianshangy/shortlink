@@ -233,7 +233,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .createdType(hasShortLink.getCreatedType())
                     .totalPv(hasShortLink.getTotalPv())
                     .totalUv(hasShortLink.getTotalUv())
-                    .todayUip(hasShortLink.getTodayUip())
+                    .todayUip(hasShortLink.getTotalUip())
                     .gid(requestParam.getGid())
                     .originUrl(requestParam.getOriginUrl())
                     .describe(requestParam.getDescribe())
@@ -264,7 +264,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .fullShortUrl(hasShortLink.getFullShortUrl())
                     .totalPv(hasShortLink.getTotalPv())
                     .totalUv(hasShortLink.getTotalUv())
-                    .todayUip(hasShortLink.getTodayUip())
+                    .todayUip(hasShortLink.getTotalUip())
                     .build();
             baseMapper.insert(shortLinkDO);
         }

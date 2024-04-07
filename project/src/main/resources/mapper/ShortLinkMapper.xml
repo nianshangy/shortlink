@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nian.shortlink.project.mapper.ShortLinkMapper">
+
+    <select id="pageShortLink"
+            parameterType="com.nian.shortlink.project.domain.req.ShortLinkPageDTO"
+            resultType="com.nian.shortlink.project.domain.entity.ShortLink">
+        SELECT
+            link.*,
+            COALESCE(today.today_pv, 0) AS todayPv,
+            COALESCE(today.today_uv, 0) AS todayUv,
+            COALESCE(today.today_uip, 0) AS todayUip
+        FROM
+            t_link link
+        LEFT JOIN t_link_stats_today today
+            ON link.gid = today.gid
+            AND link.full_short_url = today.full_short_url
+            AND today.date = CURDATE()
+        WHERE
+            link.gid = #{gid}
+            AND link.enable_status = 0
+            AND link.del_flag = 0
+        <choose>
+            <when test="orderTag == 'todayPv'">
+                ORDER BY today.today_pv DESC
+            </when>
+            <when test="orderTag == 'todayUv'">
+                ORDER BY today.today_uv DESC
+            </when>
+            <when test="orderTag == 'todayUip'">
+                ORDER BY today.today_uip DESC
+            </when>
+            <when test="orderTag == 'totalPv'">
+                ORDER BY link.total_pv DESC
+            </when>
+            <when test="orderTag == 'totalUv'">
+                ORDER BY link.total_uv DESC
+            </when>
+            <when test="orderTag == 'totalUip'">
+                ORDER BY link.total_uip DESC
+            </when>
+            <otherwise>
+                ORDER BY link.create_time DESC
+            </otherwise>
+        </choose>
+    </select>
+</mapper>
