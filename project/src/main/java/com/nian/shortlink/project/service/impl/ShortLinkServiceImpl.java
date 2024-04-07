@@ -76,6 +76,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final LinkAccessLogsMapper linkAccessLogsMapper;
     private final LinkDeviceMapper linkDeviceMapper;
     private final LinkNetworkMapper linkNetworkMapper;
+    private final LinkStatsTodayMapper linkStatsTodayMapper;
 
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
@@ -175,6 +176,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .originUrl(requestParam.getOriginUrl())
                 .domain(requestParam.getDomain())
                 .gid(requestParam.getGid())
+                .totalPv(0)
+                .totalUv(0)
+                .totalUip(0)
                 .validDateType(requestParam.getValidDateType())
                 .validDate(requestParam.getValidDate())
                 .build();
@@ -227,6 +231,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .shortUri(hasShortLink.getShortUri())
                     .favicon(hasShortLink.getFavicon())
                     .createdType(hasShortLink.getCreatedType())
+                    .totalPv(hasShortLink.getTotalPv())
+                    .totalUv(hasShortLink.getTotalUv())
+                    .todayUip(hasShortLink.getTodayUip())
                     .gid(requestParam.getGid())
                     .originUrl(requestParam.getOriginUrl())
                     .describe(requestParam.getDescribe())
@@ -255,6 +262,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .shortUri(hasShortLink.getShortUri())
                     .enableStatus(hasShortLink.getEnableStatus())
                     .fullShortUrl(hasShortLink.getFullShortUrl())
+                    .totalPv(hasShortLink.getTotalPv())
+                    .totalUv(hasShortLink.getTotalUv())
+                    .todayUip(hasShortLink.getTodayUip())
                     .build();
             baseMapper.insert(shortLinkDO);
         }
@@ -262,12 +272,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
 
     @Override
     public IPage<ShortLinkPageRespVO> pageShortLink(ShortLinkPageDTO requestParam) {
-        LambdaQueryWrapper<ShortLink> queryWrapper = Wrappers.lambdaQuery(ShortLink.class)
-                .eq(ShortLink::getGid, requestParam.getGid())
-                .eq(ShortLink::getEnableStatus, 0)
-                .eq(ShortLink::getDelFlag, 0)
-                .orderByDesc(ShortLink::getCreateTime);
-        IPage<ShortLink> resultPage = baseMapper.selectPage(requestParam, queryWrapper);
+        IPage<ShortLink> resultPage = baseMapper.pageShortLink(requestParam);
         return resultPage.convert(each -> {
             ShortLinkPageRespVO result = BeanUtil.toBean(each, ShortLinkPageRespVO.class);
             result.setDomain("http://" + result.getDomain());
@@ -301,6 +306,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             uvCookie.setMaxAge(60 * 60 * 24 * 30);
             uvFirstFlag.set(Boolean.TRUE);
             stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, uv.get());
+            //给uv与uip增加个1天的过期时间，方便增加每日的访问统计的uv与pv
+            stringRedisTemplate.expire("short-link:stats:uv:" + fullShortUrl, 1, TimeUnit.DAYS);
             response.addCookie(uvCookie);
         };
 
@@ -315,7 +322,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         //问题cookie是30天过期，所以还需要将缓存中的key过期时间也设置成30天不然会一直存储导致缓存不足
                         //TODO 大量的cookie，怎么保证redis不被其给撑爆
                         Long uvAdded = stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, each);
-                        stringRedisTemplate.expire("short-link:stats:uv:", 30, TimeUnit.DAYS);
+                        stringRedisTemplate.expire("short-link:stats:uv:" + fullShortUrl, 1, TimeUnit.DAYS);
                         uvFirstFlag.set(uvAdded != null && uvAdded > 0L);
                     }, addResponseCookieTask);
         } else {
@@ -325,6 +332,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         //TODO 大量的uip，怎么保证redis不被其给撑爆
         String actualIp = LinkUtil.getActualIp(request);
         Long uipAdded = stringRedisTemplate.opsForSet().add("short-link:stats:uip:" + fullShortUrl, actualIp);
+        stringRedisTemplate.expire("short-link:stats:uip:" + fullShortUrl, 1, TimeUnit.DAYS);
         boolean uipFirstFlag = uipAdded != null && uipAdded > 0L;
 
         if (StrUtil.isBlank(gid)) {
@@ -429,6 +437,20 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .device(device)
                 .build();
         linkAccessLogsMapper.insert(linkAccessLogs);
+
+        //增加总统计的访问数
+        baseMapper.incrementStats(fullShortUrl,gid,1,uvFirstFlag.get() ? 1 : 0,uipFirstFlag ? 1 : 0);
+
+        //保存短链接今日统计数据到数据库
+        LinkStatsToday linkStatsToday = LinkStatsToday.builder()
+                .fullShortUrl(fullShortUrl)
+                .gid(gid)
+                .todayPv(1)
+                .todayUv(uvFirstFlag.get() ? 1 : 0)
+                .todayUip(uipFirstFlag ? 1 : 0)
+                .date(date)
+                .build();
+        linkStatsTodayMapper.shortLinkTodayState(linkStatsToday);
     }
 
     private String generatedSuffix(ShortLinkCreateReqDTO requestParam) {
