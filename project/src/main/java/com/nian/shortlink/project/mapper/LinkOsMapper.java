@@ -2,6 +2,7 @@ package com.nian.shortlink.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nian.shortlink.project.domain.entity.LinkOsStats;
+import com.nian.shortlink.project.domain.req.ShortLinkGroupStatsReqDTO;
 import com.nian.shortlink.project.domain.req.ShortLinkStatsReqDTO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,4 +42,19 @@ public interface LinkOsMapper extends BaseMapper<LinkOsStats> {
             "    full_short_url, gid, os;")
     List<LinkOsStats> listOsStatsByShortLink(@Param("param") ShortLinkStatsReqDTO requestParam);
 
+    /**
+     * 根据分组获取指定日期内操作系统监控数据
+     */
+    @Select("SELECT " +
+            "    os, " +
+            "    SUM(cnt) AS cnt " +
+            "FROM " +
+            "    t_link_os_stats " +
+            "WHERE " +
+            "    gid = #{param.gid} " +
+            "    AND date BETWEEN #{param.startDate} and #{param.endDate} " +
+            "    AND del_flag = 0 " +
+            "GROUP BY " +
+            "    gid, os;")
+    List<LinkOsStats> listOsStatsByGroup(@Param("param") ShortLinkGroupStatsReqDTO requestParam);
 }

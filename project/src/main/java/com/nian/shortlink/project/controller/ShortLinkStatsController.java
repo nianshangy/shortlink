@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.project.common.convention.result.Result;
 import com.nian.shortlink.project.common.convention.result.ResultUtils;
 import com.nian.shortlink.project.domain.req.ShortLinkAccessRecordReqDTO;
+import com.nian.shortlink.project.domain.req.ShortLinkGroupAccessRecordReqDTO;
+import com.nian.shortlink.project.domain.req.ShortLinkGroupStatsReqDTO;
 import com.nian.shortlink.project.domain.req.ShortLinkStatsReqDTO;
 import com.nian.shortlink.project.domain.resp.ShortLinkAccessRecordRespVO;
 import com.nian.shortlink.project.domain.resp.ShortLinkStatsRespVO;
@@ -29,6 +31,14 @@ public class ShortLinkStatsController {
     }
 
     /**
+     * 访问分组短链接指定时间内监控数据
+     */
+    @GetMapping("/api/short-link/v1/stats/group")
+    public Result<ShortLinkStatsRespVO> groupShortLinkStats(ShortLinkGroupStatsReqDTO requestParam){
+        return ResultUtils.success(shortLinkStatsService.groupShortLinkStats(requestParam),"查询成功！");
+    }
+
+    /**
      * 访问单个短链接指定时间内的访问记录监控数据
      */
     @GetMapping("/api/short-link/v1/stats/access-record")
@@ -36,5 +46,12 @@ public class ShortLinkStatsController {
         return ResultUtils.success(shortLinkStatsService.shortLinkStatsAccessRecord(requestParam),"查询成功！");
     }
 
+    /**
+     * 访问分组短链接指定时间内访问记录监控数据
+     */
+    @GetMapping("/api/short-link/v1/stats/access-record/group")
+    public Result<IPage<ShortLinkAccessRecordRespVO>> groupShortLinkStatsAccessRecord(ShortLinkGroupAccessRecordReqDTO requestParam) {
+        return ResultUtils.success(shortLinkStatsService.groupShortLinkStatsAccessRecord(requestParam));
+    }
 
 }

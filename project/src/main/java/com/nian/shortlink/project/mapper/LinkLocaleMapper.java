@@ -2,6 +2,7 @@ package com.nian.shortlink.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nian.shortlink.project.domain.entity.LinkLocaleStats;
+import com.nian.shortlink.project.domain.req.ShortLinkGroupStatsReqDTO;
 import com.nian.shortlink.project.domain.req.ShortLinkStatsReqDTO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,4 +42,21 @@ public interface LinkLocaleMapper extends BaseMapper<LinkLocaleStats> {
             "    full_short_url, gid, province;"
     )
     List<LinkLocaleStats> listLocaleStatsByShortLink(@Param("param") ShortLinkStatsReqDTO requestParam);
+
+    /**
+     * 根据短链接获取指定日期内分组地区监控数据
+     */
+    @Select("SELECT " +
+            "   province, " +
+            "   SUM(cnt) as cnt " +
+            "FROM " +
+            "   t_link_locale_stats " +
+            "where " +
+            "   gid = #{param.gid}" +
+            "   AND date BETWEEN #{param.startDate} AND #{param.endDate}" +
+            "   AND del_flag = 0 " +
+            "GROUP BY " +
+            "    gid, province;"
+    )
+    List<LinkLocaleStats> listLocaleStatsByGroup(@Param("param") ShortLinkGroupStatsReqDTO requestParam);
 }
