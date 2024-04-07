@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
 import com.nian.shortlink.admin.remote.req.ShortLinkAccessRecordReqDTO;
+import com.nian.shortlink.admin.remote.req.ShortLinkGroupAccessRecordReqDTO;
+import com.nian.shortlink.admin.remote.req.ShortLinkGroupStatsReqDTO;
 import com.nian.shortlink.admin.remote.req.ShortLinkStatsReqDTO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkAccessRecordRespVO;
 import com.nian.shortlink.admin.remote.resp.ShortLinkStatsRespVO;
@@ -26,11 +28,27 @@ public class ShortLinkStatsController {
     }
 
     /**
+     * 访问分组短链接指定时间内监控数据
+     */
+    @GetMapping("/api/short-link/admin/v1/stats/group")
+    public Result<ShortLinkStatsRespVO> groupShortLinkStats(ShortLinkGroupStatsReqDTO requestParam){
+        return shortLinkRemoteService.groupShortLinkStats(requestParam);
+    }
+
+    /**
      * 访问单个短链接指定时间内的访问记录监控数据
      */
     @GetMapping("/api/short-link/admin/v1/stats/access-record")
     public Result<IPage<ShortLinkAccessRecordRespVO>> shortLinkStatsAccessRecord(ShortLinkAccessRecordReqDTO requestParam){
         return shortLinkRemoteService.shortLinkStatsAccessRecord(requestParam);
+    }
+
+    /**
+     * 访问分组短链接指定时间内访问记录监控数据
+     */
+    @GetMapping("/api/short-link/admin/v1/stats/access-record/group")
+    public Result<IPage<ShortLinkAccessRecordRespVO>> groupShortLinkStatsAccessRecord(ShortLinkGroupAccessRecordReqDTO requestParam) {
+        return shortLinkRemoteService.groupShortLinkStatsAccessRecord(requestParam);
     }
 
 }

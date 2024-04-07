@@ -102,7 +102,7 @@ public interface ShortLinkRemoteService {
     }
 
     /**
-     * 获取单个短链接监控数据
+     * 访问单个短链接指定时间内监控数据
      */
     default Result<ShortLinkStatsRespVO> oneShortLinkStats(ShortLinkStatsReqDTO requestParam){
         Map<String, Object> stringObjectMap = BeanUtil.beanToMap(requestParam);
@@ -111,7 +111,16 @@ public interface ShortLinkRemoteService {
     }
 
     /**
-     * 访问单个短链接指定时间内的访问记录监控数据
+     * 访问分组短链接指定时间内监控数据
+     */
+    default Result<ShortLinkStatsRespVO> groupShortLinkStats(ShortLinkGroupStatsReqDTO requestParam){
+        Map<String, Object> stringObjectMap = BeanUtil.beanToMap(requestParam);
+        String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/group", stringObjectMap);
+        return JSON.parseObject(resultBodyStr, new TypeReference<>() {});
+    }
+
+    /**
+     * 访问单个短链接指定时间内监控访问记录数据
      */
     default Result<IPage<ShortLinkAccessRecordRespVO>> shortLinkStatsAccessRecord(ShortLinkAccessRecordReqDTO requestParam){
         Map<String, Object> stringObjectMap = BeanUtil.beanToMap(requestParam);
@@ -120,4 +129,18 @@ public interface ShortLinkRemoteService {
         String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/access-record", stringObjectMap);
         return JSON.parseObject(resultBodyStr, new TypeReference<>() {});
     }
+
+
+
+    /**
+     * 访问分组短链接指定时间内监控访问记录数据
+     */
+    default Result<IPage<ShortLinkAccessRecordRespVO>> groupShortLinkStatsAccessRecord(ShortLinkGroupAccessRecordReqDTO requestParam){
+        Map<String, Object> stringObjectMap = BeanUtil.beanToMap(requestParam);
+        stringObjectMap.remove("orders");
+        stringObjectMap.remove("records");
+        String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/access-record/group", stringObjectMap);
+        return JSON.parseObject(resultBodyStr, new TypeReference<>() {});
+    }
+
 }

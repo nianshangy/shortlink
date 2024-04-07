@@ -51,7 +51,7 @@ public class ShortLinkStatsController {
      */
     @GetMapping("/api/short-link/v1/stats/access-record/group")
     public Result<IPage<ShortLinkAccessRecordRespVO>> groupShortLinkStatsAccessRecord(ShortLinkGroupAccessRecordReqDTO requestParam) {
-        return ResultUtils.success(shortLinkStatsService.groupShortLinkStatsAccessRecord(requestParam));
+        return ResultUtils.success(shortLinkStatsService.groupShortLinkStatsAccessRecord(requestParam),"查询成功！");
     }
 
 }
