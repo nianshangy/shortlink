@@ -478,6 +478,34 @@ public class ShortLinkStatsServiceImpl implements IShortLinkStatsService {
 
     @Override
     public IPage<ShortLinkAccessRecordRespVO> groupShortLinkStatsAccessRecord(ShortLinkGroupAccessRecordReqDTO requestParam) {
-        return null;
+        //查询该gid下的所有日志记录
+        LambdaQueryWrapper<LinkAccessLogs> queryWrapper = Wrappers.lambdaQuery(LinkAccessLogs.class)
+                .eq(LinkAccessLogs::getGid, requestParam.getGid())
+                .eq(LinkAccessLogs::getDelFlag, 0)
+                .between(LinkAccessLogs::getCreateTime, requestParam.getStartDate(), requestParam.getEndDate())
+                .orderByDesc(LinkAccessLogs::getCreateTime);
+        IPage<LinkAccessLogs> shortLinkAccessRecordIPage = linkAccessLogsMapper.selectPage(requestParam, queryWrapper);
+        IPage<ShortLinkAccessRecordRespVO> actualResult = shortLinkAccessRecordIPage.convert(each -> BeanUtil.toBean(each, ShortLinkAccessRecordRespVO.class));
+        List<String> userList = actualResult.getRecords().stream()
+                .map(ShortLinkAccessRecordRespVO::getUser)
+                .toList();
+        JudgeUvTypeReqDTO judgeUvTypeReqDTO = JudgeUvTypeReqDTO.builder()
+                .gid(requestParam.getGid())
+                .startDate(requestParam.getStartDate())
+                .endDate(requestParam.getEndDate())
+                .userList(userList)
+                .build();
+        List<HashMap<String, Object>> uvTypes = linkAccessLogsMapper.listUvTypesByShortLink(judgeUvTypeReqDTO);
+        //根据user去判断访客类型（为新老访客）
+        actualResult.getRecords().forEach(each -> {
+            String uvType = uvTypes.stream()
+                    .filter(item -> Objects.equals(item.get("user"), each.getUser()))
+                    .findFirst()
+                    .map(item -> item.get("uvType"))
+                    .map(Object::toString)
+                    .orElse("老访客");
+            each.setUvType(uvType);
+        });
+        return actualResult;
     }
 }
