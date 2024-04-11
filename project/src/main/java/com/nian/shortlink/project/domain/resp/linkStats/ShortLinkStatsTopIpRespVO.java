@@ -1,4 +1,4 @@
-package com.nian.shortlink.project.domain.resp;
+package com.nian.shortlink.project.domain.resp.linkStats;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,25 +6,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 短链接浏览器监控响应参数
+ * 短链接高频ip监控响应参数
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShortLinkStatsBrowserRespVO {
+public class ShortLinkStatsTopIpRespVO {
     /**
      * 统计
      */
     private Integer cnt;
 
     /**
-     * 浏览器
+     * IP
      */
-    private String browser;
-
-    /**
-     * 占比
-     */
-    private Double ratio;
+    private String ip;
 }

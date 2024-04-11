@@ -1,4 +1,4 @@
-package com.nian.shortlink.project.domain.resp;
+package com.nian.shortlink.project.domain.resp.link;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,19 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 短链接创建响应参数
+ * 短链接基础信息响应参数
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShortLinkCreateRespVO {
+public class ShortLinkBatchBaseInfoRespVO {
 
     /**
-     * 分组标识
+     * 描述
      */
-    private String gid;
-
+    private String describe;
 
     /**
      * 原始链接

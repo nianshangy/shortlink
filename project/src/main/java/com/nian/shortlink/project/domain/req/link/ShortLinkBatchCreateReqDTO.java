@@ -1,16 +1,17 @@
-package com.nian.shortlink.project.domain.req;
+package com.nian.shortlink.project.domain.req.link;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
- * 短链接创建请求参数
+ * 短链接批量创建请求参数
  */
 @Data
-public class ShortLinkCreateReqDTO {
+public class ShortLinkBatchCreateReqDTO {
 
     /**
      * 域名
@@ -20,7 +21,7 @@ public class ShortLinkCreateReqDTO {
     /**
      * 原始链接
      */
-    private String originUrl;
+    private List<String> originUrls;
 
     /**
      * 分组标识
@@ -47,10 +48,5 @@ public class ShortLinkCreateReqDTO {
      * 描述
      */
     @TableField("`describe`")
-    private String describe;
-
-    /**
-     * 网站标识
-     */
-    private String favicon;
+    private List<String> describes;
 }

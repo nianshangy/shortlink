@@ -34,6 +34,21 @@ public class ShortLinkController {
     }
 
     /**
+     * 批量创建短链接
+     */
+    /*@PostMapping("/api/short-link/v1/create/batch")
+    public void batchCreateShortLink(@RequestBody ShortLinkBatchCreateReqDTO requestParam){
+        *//*ShortLinkBatchCreateRespVO shortLinkBatchCreateRespVOResult = shortLinkService.batchCreateShortLink(requestParam);
+        //将返回结果通过easyExcel发送给前端
+        return ResultUtils.success(shortLinkBatchCreateRespVOResult,"创建短链接成功！");*//*
+        Result<ShortLinkBatchCreateRespVO> shortLinkBatchCreateRespVOResult = shortLinkService.batchCreateShortLink(requestParam);
+        if (shortLinkBatchCreateRespVOResult.isSuccess()){
+
+        }
+        //将返回结果通过easyExcel发送给前端
+    }*/
+
+    /**
      * 修改短链接
      */
     @PutMapping("/api/short-link/admin/v1/update")

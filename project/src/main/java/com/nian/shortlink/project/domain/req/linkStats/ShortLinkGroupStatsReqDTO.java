@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.nian.shortlink.project.domain.req;
+package com.nian.shortlink.project.domain.req.linkStats;
 
 import lombok.Data;
 

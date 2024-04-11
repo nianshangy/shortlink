@@ -1,12 +1,12 @@
 package com.nian.shortlink.project.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.nian.shortlink.project.domain.req.ShortLinkAccessRecordReqDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkGroupAccessRecordReqDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkGroupStatsReqDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkStatsReqDTO;
-import com.nian.shortlink.project.domain.resp.ShortLinkAccessRecordRespVO;
-import com.nian.shortlink.project.domain.resp.ShortLinkStatsRespVO;
+import com.nian.shortlink.project.domain.req.linkStats.ShortLinkAccessRecordReqDTO;
+import com.nian.shortlink.project.domain.req.linkStats.ShortLinkGroupAccessRecordReqDTO;
+import com.nian.shortlink.project.domain.req.linkStats.ShortLinkGroupStatsReqDTO;
+import com.nian.shortlink.project.domain.req.linkStats.ShortLinkStatsReqDTO;
+import com.nian.shortlink.project.domain.resp.linkStats.ShortLinkAccessRecordRespVO;
+import com.nian.shortlink.project.domain.resp.linkStats.ShortLinkStatsRespVO;
 
 /**
  * 短链接监控接口层

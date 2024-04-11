@@ -3,7 +3,7 @@ package com.nian.shortlink.project.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.project.domain.entity.ShortLink;
-import com.nian.shortlink.project.domain.req.ShortLinkPageDTO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkPageDTO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 

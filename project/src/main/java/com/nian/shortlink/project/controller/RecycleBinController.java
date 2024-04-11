@@ -7,7 +7,7 @@ import com.nian.shortlink.project.domain.req.recycle.RecycleBinRecoverReqDTO;
 import com.nian.shortlink.project.domain.req.recycle.RecycleBinRemoveReqDTO;
 import com.nian.shortlink.project.domain.req.recycle.RecycleBinSaveReqDTO;
 import com.nian.shortlink.project.domain.req.recycle.ShortLinkRecycleBinPageReqDTO;
-import com.nian.shortlink.project.domain.resp.ShortLinkRecycleBinPageRespVO;
+import com.nian.shortlink.project.domain.resp.recycle.ShortLinkRecycleBinPageRespVO;
 import com.nian.shortlink.project.service.IRecycleBinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

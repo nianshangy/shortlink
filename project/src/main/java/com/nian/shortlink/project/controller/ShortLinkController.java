@@ -3,12 +3,14 @@ package com.nian.shortlink.project.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.project.common.convention.result.Result;
 import com.nian.shortlink.project.common.convention.result.ResultUtils;
-import com.nian.shortlink.project.domain.req.ShortLinkCreateReqDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkPageDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkUpdateReqDTO;
-import com.nian.shortlink.project.domain.resp.ShortLinkCountRespVO;
-import com.nian.shortlink.project.domain.resp.ShortLinkCreateRespVO;
-import com.nian.shortlink.project.domain.resp.ShortLinkPageRespVO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkBatchCreateReqDTO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkCreateReqDTO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkPageDTO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkUpdateReqDTO;
+import com.nian.shortlink.project.domain.resp.link.ShortLinkBatchCreateRespVO;
+import com.nian.shortlink.project.domain.resp.link.ShortLinkCountRespVO;
+import com.nian.shortlink.project.domain.resp.link.ShortLinkCreateRespVO;
+import com.nian.shortlink.project.domain.resp.link.ShortLinkPageRespVO;
 import com.nian.shortlink.project.service.IShortLinkService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +43,15 @@ public class ShortLinkController {
     @PostMapping("/api/short-link/v1/create")
     public Result<ShortLinkCreateRespVO> createShortLink(@RequestBody ShortLinkCreateReqDTO requestParam){
         return ResultUtils.success(shortLinkService.createShortLink(requestParam),"创建短链接成功！");
+    }
+
+
+    /**
+     * 批量创建短链接
+     */
+    @PostMapping("/api/short-link/v1/create/batch")
+    public Result<ShortLinkBatchCreateRespVO> batchCreateShortLink(@RequestBody ShortLinkBatchCreateReqDTO requestParam) {
+        return ResultUtils.success(shortLinkService.batchCreateShortLink(requestParam));
     }
 
     /**

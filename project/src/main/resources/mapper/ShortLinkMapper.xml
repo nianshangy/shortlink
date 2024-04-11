@@ -5,7 +5,7 @@
 <mapper namespace="com.nian.shortlink.project.mapper.ShortLinkMapper">
 
     <select id="pageShortLink"
-            parameterType="com.nian.shortlink.project.domain.req.ShortLinkPageDTO"
+            parameterType="com.nian.shortlink.project.domain.req.link.ShortLinkPageDTO"
             resultType="com.nian.shortlink.project.domain.entity.ShortLink">
         SELECT
             link.*,

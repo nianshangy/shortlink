@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
@@ -16,12 +17,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.project.common.convention.exception.ClientException;
 import com.nian.shortlink.project.domain.entity.*;
-import com.nian.shortlink.project.domain.req.ShortLinkCreateReqDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkPageDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkUpdateReqDTO;
-import com.nian.shortlink.project.domain.resp.ShortLinkCountRespVO;
-import com.nian.shortlink.project.domain.resp.ShortLinkCreateRespVO;
-import com.nian.shortlink.project.domain.resp.ShortLinkPageRespVO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkBatchCreateReqDTO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkCreateReqDTO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkPageDTO;
+import com.nian.shortlink.project.domain.req.link.ShortLinkUpdateReqDTO;
+import com.nian.shortlink.project.domain.resp.link.*;
 import com.nian.shortlink.project.mapper.*;
 import com.nian.shortlink.project.service.IShortLinkService;
 import com.nian.shortlink.project.utils.HashUtil;
@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.nian.shortlink.project.common.constat.RedisKeyConstant.*;
 import static com.nian.shortlink.project.common.constat.ShortLinkConstant.AMAP_REMOTE_URL;
+import static com.nian.shortlink.project.common.convention.errorcode.BaseErrorCode.CLIENT_ERROR;
 
 /**
  * 短链接接口实现层
@@ -86,6 +87,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     public void restoreUrl(String shortUrl, HttpServletRequest request, HttpServletResponse response) {
         //获取短链接网站的域名
         String serverName = request.getServerName();
+        //TODO 不确定是否要自己直接指定域名与端口
         /*String serverPort = Optional.of(request.getServerPort())
                 .filter(each -> !Objects.equals(each, 80))
                 .map(String::valueOf)
@@ -156,6 +158,38 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         } finally {
             lock.unlock();
         }
+    }
+
+    @Transactional
+    @Override
+    public ShortLinkBatchCreateRespVO batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam) {
+        List<String> originUrls = requestParam.getOriginUrls();
+        List<String> describes = requestParam.getDescribes();
+        if (ObjectUtil.isAllEmpty(originUrls)) {
+            throw new ClientException(CLIENT_ERROR);
+        }
+        List<ShortLinkBatchBaseInfoRespVO> results = new ArrayList<>();
+
+        for (int i = 0; i < originUrls.size(); i++) {
+            ShortLinkCreateReqDTO shortLinkCreateReqDTO = BeanUtil.toBean(requestParam, ShortLinkCreateReqDTO.class);
+            shortLinkCreateReqDTO.setOriginUrl(originUrls.get(i));
+            shortLinkCreateReqDTO.setDescribe(describes.get(i));
+            try {
+                ShortLinkCreateRespVO shortLink = createShortLink(shortLinkCreateReqDTO);
+                ShortLinkBatchBaseInfoRespVO linkBaseInfoRespDTO = ShortLinkBatchBaseInfoRespVO.builder()
+                        .fullShortUrl(shortLink.getFullShortUrl())
+                        .originUrl(shortLink.getOriginUrl())
+                        .describe(describes.get(i))
+                        .build();
+                results.add(linkBaseInfoRespDTO);
+            } catch (Exception e) {
+                log.error("批量创建短链接失败，原始参数：{}", originUrls.get(i));
+            }
+        }
+        return ShortLinkBatchCreateRespVO.builder()
+                .total(results.size())
+                .baseLinkInfos(results)
+                .build();
     }
 
     @Transactional
@@ -371,9 +405,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .fullShortUrl(fullShortUrl)
                     .gid(gid)
                     .country("中国")
-                    .province(StrUtil.equals(actualProvince,"[]") ? "未知": actualProvince)
-                    .city(StrUtil.equals(actualProvince,"[]") ? "未知": actualCity)
-                    .adcode(StrUtil.equals(actualAdcode,"[]") ? "未知": actualAdcode)
+                    .province(StrUtil.equals(actualProvince, "[]") ? "未知" : actualProvince)
+                    .city(StrUtil.equals(actualProvince, "[]") ? "未知" : actualCity)
+                    .adcode(StrUtil.equals(actualAdcode, "[]") ? "未知" : actualAdcode)
                     .cnt(1)
                     .date(date)
                     .build();
@@ -433,13 +467,13 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .browser(browser)
                 .os(os)
                 .network(network)
-                .locale(StrUtil.join("-","中国",actualProvince,actualCity))
+                .locale(StrUtil.join("-", "中国", actualProvince, actualCity))
                 .device(device)
                 .build();
         linkAccessLogsMapper.insert(linkAccessLogs);
 
         //增加总统计的访问数
-        baseMapper.incrementStats(fullShortUrl,gid,1,uvFirstFlag.get() ? 1 : 0,uipFirstFlag ? 1 : 0);
+        baseMapper.incrementStats(fullShortUrl, gid, 1, uvFirstFlag.get() ? 1 : 0, uipFirstFlag ? 1 : 0);
 
         //保存短链接今日统计数据到数据库
         LinkStatsToday linkStatsToday = LinkStatsToday.builder()

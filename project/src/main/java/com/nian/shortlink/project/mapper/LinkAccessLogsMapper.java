@@ -2,9 +2,9 @@ package com.nian.shortlink.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nian.shortlink.project.domain.entity.LinkAccessLogs;
-import com.nian.shortlink.project.domain.req.JudgeUvTypeReqDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkGroupStatsReqDTO;
-import com.nian.shortlink.project.domain.req.ShortLinkStatsReqDTO;
+import com.nian.shortlink.project.domain.req.linkStats.JudgeUvTypeReqDTO;
+import com.nian.shortlink.project.domain.req.linkStats.ShortLinkGroupStatsReqDTO;
+import com.nian.shortlink.project.domain.req.linkStats.ShortLinkStatsReqDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

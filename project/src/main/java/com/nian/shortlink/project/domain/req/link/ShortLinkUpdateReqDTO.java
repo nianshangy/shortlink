@@ -1,4 +1,4 @@
-package com.nian.shortlink.project.domain.req;
+package com.nian.shortlink.project.domain.req.link;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;

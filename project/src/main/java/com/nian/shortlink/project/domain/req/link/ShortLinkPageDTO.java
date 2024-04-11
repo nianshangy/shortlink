@@ -1,4 +1,4 @@
-package com.nian.shortlink.project.domain.req;
+package com.nian.shortlink.project.domain.req.link;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nian.shortlink.project.domain.entity.ShortLink;
