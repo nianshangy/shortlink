@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.remote.req;
+package com.nian.shortlink.admin.remote.req.recycle;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,7 +10,7 @@ import java.util.List;
  * 短链接回收站分页查寻请求参数
  */
 @Data
-public class ShortLinkRecycleBinPageReqDTO extends Page {
+public class ShortLinkRecycleBinPageReqDTO extends Page{
 
     /**
      * 分组标识集合

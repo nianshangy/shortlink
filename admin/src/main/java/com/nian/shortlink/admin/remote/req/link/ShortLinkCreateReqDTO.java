@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.remote.req;
+package com.nian.shortlink.admin.remote.req.link;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -48,9 +48,4 @@ public class ShortLinkCreateReqDTO {
      */
     @TableField("`describe`")
     private String describe;
-
-    /**
-     * 网站标识
-     */
-    private String favicon;
 }

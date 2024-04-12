@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.remote.req;
+package com.nian.shortlink.admin.remote.req.linkStats;
 
 import lombok.Data;
 

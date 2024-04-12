@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.common.convention.result.ResultUtils;
 import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
-import com.nian.shortlink.admin.remote.req.ShortLinkCreateReqDTO;
-import com.nian.shortlink.admin.remote.req.ShortLinkPageDTO;
-import com.nian.shortlink.admin.remote.req.ShortLinkUpdateReqDTO;
-import com.nian.shortlink.admin.remote.resp.ShortLinkCountRespVO;
-import com.nian.shortlink.admin.remote.resp.ShortLinkCreateRespVO;
-import com.nian.shortlink.admin.remote.resp.ShortLinkPageRespVO;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkBatchCreateReqDTO;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkCreateReqDTO;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkPageDTO;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkUpdateReqDTO;
+import com.nian.shortlink.admin.remote.resp.link.*;
+import com.nian.shortlink.admin.utils.EasyExcelWebUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,17 +37,15 @@ public class ShortLinkController {
     /**
      * 批量创建短链接
      */
-    /*@PostMapping("/api/short-link/v1/create/batch")
-    public void batchCreateShortLink(@RequestBody ShortLinkBatchCreateReqDTO requestParam){
-        *//*ShortLinkBatchCreateRespVO shortLinkBatchCreateRespVOResult = shortLinkService.batchCreateShortLink(requestParam);
-        //将返回结果通过easyExcel发送给前端
-        return ResultUtils.success(shortLinkBatchCreateRespVOResult,"创建短链接成功！");*//*
-        Result<ShortLinkBatchCreateRespVO> shortLinkBatchCreateRespVOResult = shortLinkService.batchCreateShortLink(requestParam);
+    @PostMapping("/api/short-link/admin/v1/create/batch")
+    public void batchCreateShortLink(@RequestBody ShortLinkBatchCreateReqDTO requestParam, HttpServletResponse response){
+        Result<ShortLinkBatchCreateRespVO> shortLinkBatchCreateRespVOResult = shortLinkRemoteService.batchCreateShortLink(requestParam);
         if (shortLinkBatchCreateRespVOResult.isSuccess()){
-
+            List<ShortLinkBatchBaseInfoRespVO> baseLinkInfos = shortLinkBatchCreateRespVOResult.getData().getBaseLinkInfos();
+            //将返回结果通过easyExcel发送给前端
+            EasyExcelWebUtil.write(response,"批量创建短链接-京东短链接系统",ShortLinkBatchBaseInfoRespVO.class,baseLinkInfos);
         }
-        //将返回结果通过easyExcel发送给前端
-    }*/
+    }
 
     /**
      * 修改短链接

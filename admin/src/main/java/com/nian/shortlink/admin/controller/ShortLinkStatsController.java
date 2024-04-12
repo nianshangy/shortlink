@@ -3,12 +3,12 @@ package com.nian.shortlink.admin.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
-import com.nian.shortlink.admin.remote.req.ShortLinkAccessRecordReqDTO;
-import com.nian.shortlink.admin.remote.req.ShortLinkGroupAccessRecordReqDTO;
-import com.nian.shortlink.admin.remote.req.ShortLinkGroupStatsReqDTO;
-import com.nian.shortlink.admin.remote.req.ShortLinkStatsReqDTO;
-import com.nian.shortlink.admin.remote.resp.ShortLinkAccessRecordRespVO;
-import com.nian.shortlink.admin.remote.resp.ShortLinkStatsRespVO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkAccessRecordReqDTO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkGroupAccessRecordReqDTO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkGroupStatsReqDTO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkStatsReqDTO;
+import com.nian.shortlink.admin.remote.resp.linkStats.ShortLinkAccessRecordRespVO;
+import com.nian.shortlink.admin.remote.resp.linkStats.ShortLinkStatsRespVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

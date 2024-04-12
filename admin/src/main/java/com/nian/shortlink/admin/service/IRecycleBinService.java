@@ -2,8 +2,8 @@ package com.nian.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nian.shortlink.admin.common.convention.result.Result;
-import com.nian.shortlink.admin.remote.req.ShortLinkRecycleBinPageReqDTO;
-import com.nian.shortlink.admin.remote.resp.ShortLinkRecycleBinPageRespVO;
+import com.nian.shortlink.admin.remote.req.recycle.ShortLinkRecycleBinPageReqDTO;
+import com.nian.shortlink.admin.remote.resp.recycle.ShortLinkRecycleBinPageRespVO;
 
 /**
  * URL 回收站接口层

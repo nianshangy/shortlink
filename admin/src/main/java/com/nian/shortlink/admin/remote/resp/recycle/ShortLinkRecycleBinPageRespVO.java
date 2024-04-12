@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.remote.resp;
+package com.nian.shortlink.admin.remote.resp.recycle;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -6,10 +6,11 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 短链接分页查寻响应参数
+ * 短链接回收站分页查寻响应参数
  */
 @Data
-public class ShortLinkPageRespVO{
+public class ShortLinkRecycleBinPageRespVO {
+
     /**
      * id
      */
@@ -66,34 +67,4 @@ public class ShortLinkPageRespVO{
      * 网站标识
      */
     private String favicon;
-
-    /**
-     * 历史PV
-     */
-    private Integer totalPv;
-
-    /**
-     * 今日PV
-     */
-    private Integer todayPv;
-
-    /**
-     * 历史UV
-     */
-    private Integer totalUv;
-
-    /**
-     * 今日UV
-     */
-    private Integer todayUv;
-
-    /**
-     * 历史UIP
-     */
-    private Integer totalUip;
-
-    /**
-     * 今日UIP
-     */
-    private Integer todayUip;
 }

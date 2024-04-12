@@ -162,38 +162,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
 
     @Transactional
     @Override
-    public ShortLinkBatchCreateRespVO batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam) {
-        List<String> originUrls = requestParam.getOriginUrls();
-        List<String> describes = requestParam.getDescribes();
-        if (ObjectUtil.isAllEmpty(originUrls)) {
-            throw new ClientException(CLIENT_ERROR);
-        }
-        List<ShortLinkBatchBaseInfoRespVO> results = new ArrayList<>();
-
-        for (int i = 0; i < originUrls.size(); i++) {
-            ShortLinkCreateReqDTO shortLinkCreateReqDTO = BeanUtil.toBean(requestParam, ShortLinkCreateReqDTO.class);
-            shortLinkCreateReqDTO.setOriginUrl(originUrls.get(i));
-            shortLinkCreateReqDTO.setDescribe(describes.get(i));
-            try {
-                ShortLinkCreateRespVO shortLink = createShortLink(shortLinkCreateReqDTO);
-                ShortLinkBatchBaseInfoRespVO linkBaseInfoRespDTO = ShortLinkBatchBaseInfoRespVO.builder()
-                        .fullShortUrl(shortLink.getFullShortUrl())
-                        .originUrl(shortLink.getOriginUrl())
-                        .describe(describes.get(i))
-                        .build();
-                results.add(linkBaseInfoRespDTO);
-            } catch (Exception e) {
-                log.error("批量创建短链接失败，原始参数：{}", originUrls.get(i));
-            }
-        }
-        return ShortLinkBatchCreateRespVO.builder()
-                .total(results.size())
-                .baseLinkInfos(results)
-                .build();
-    }
-
-    @Transactional
-    @Override
     public ShortLinkCreateRespVO createShortLink(ShortLinkCreateReqDTO requestParam) {
         String shortLinkSuffix = generatedSuffix(requestParam);
         String fullShortUrl = StrBuilder.create(requestParam.getDomain())
@@ -238,6 +206,38 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .fullShortUrl("http://" + shortLink.getFullShortUrl())
                 .gid(requestParam.getGid())
                 .originUrl(requestParam.getOriginUrl())
+                .build();
+    }
+
+    @Transactional
+    @Override
+    public ShortLinkBatchCreateRespVO batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam) {
+        List<String> originUrls = requestParam.getOriginUrls();
+        List<String> describes = requestParam.getDescribes();
+        if (ObjectUtil.isAllEmpty(originUrls)) {
+            throw new ClientException(CLIENT_ERROR);
+        }
+        List<ShortLinkBatchBaseInfoRespVO> results = new ArrayList<>();
+
+        for (int i = 0; i < originUrls.size(); i++) {
+            ShortLinkCreateReqDTO shortLinkCreateReqDTO = BeanUtil.toBean(requestParam, ShortLinkCreateReqDTO.class);
+            shortLinkCreateReqDTO.setOriginUrl(originUrls.get(i));
+            shortLinkCreateReqDTO.setDescribe(describes.get(i));
+            try {
+                ShortLinkCreateRespVO shortLink = createShortLink(shortLinkCreateReqDTO);
+                ShortLinkBatchBaseInfoRespVO linkBaseInfoRespDTO = ShortLinkBatchBaseInfoRespVO.builder()
+                        .fullShortUrl(shortLink.getFullShortUrl())
+                        .originUrl(shortLink.getOriginUrl())
+                        .describe(describes.get(i))
+                        .build();
+                results.add(linkBaseInfoRespDTO);
+            } catch (Exception e) {
+                log.error("批量创建短链接失败，原始参数：{}", originUrls.get(i));
+            }
+        }
+        return ShortLinkBatchCreateRespVO.builder()
+                .total(results.size())
+                .baseLinkInfos(results)
                 .build();
     }
 

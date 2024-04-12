@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.remote.resp;
+package com.nian.shortlink.admin.remote.resp.linkStats;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 短链接设备监控响应参数
+ * 短链接操作系统监控响应参数
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShortLinkStatsDeviceRespVO {
+public class ShortLinkStatsOsRespVO {
 
     /**
      * 统计
@@ -20,9 +20,9 @@ public class ShortLinkStatsDeviceRespVO {
     private Integer cnt;
 
     /**
-     * 设备
+     * 操作系统
      */
-    private String device;
+    private String os;
 
     /**
      * 占比

@@ -1,4 +1,4 @@
-package com.nian.shortlink.admin.remote.req;
+package com.nian.shortlink.admin.remote.req.linkStats;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;

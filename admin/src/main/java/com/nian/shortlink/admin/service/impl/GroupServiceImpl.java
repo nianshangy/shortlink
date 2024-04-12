@@ -15,7 +15,7 @@ import com.nian.shortlink.admin.domain.req.group.GroupUpdateReqDTO;
 import com.nian.shortlink.admin.domain.resp.group.GroupQueryListRespVO;
 import com.nian.shortlink.admin.mapper.GroupMapper;
 import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
-import com.nian.shortlink.admin.remote.resp.ShortLinkCountRespVO;
+import com.nian.shortlink.admin.remote.resp.link.ShortLinkCountRespVO;
 import com.nian.shortlink.admin.service.IGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -8,8 +8,24 @@ import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nian.shortlink.admin.common.convention.result.Result;
-import com.nian.shortlink.admin.remote.req.*;
-import com.nian.shortlink.admin.remote.resp.*;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkBatchCreateReqDTO;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkCreateReqDTO;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkPageDTO;
+import com.nian.shortlink.admin.remote.req.link.ShortLinkUpdateReqDTO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkAccessRecordReqDTO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkGroupAccessRecordReqDTO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkGroupStatsReqDTO;
+import com.nian.shortlink.admin.remote.req.linkStats.ShortLinkStatsReqDTO;
+import com.nian.shortlink.admin.remote.req.recycle.RecycleBinRecoverReqDTO;
+import com.nian.shortlink.admin.remote.req.recycle.RecycleBinRemoveReqDTO;
+import com.nian.shortlink.admin.remote.req.recycle.RecycleBinSaveReqDTO;
+import com.nian.shortlink.admin.remote.resp.link.ShortLinkBatchCreateRespVO;
+import com.nian.shortlink.admin.remote.resp.link.ShortLinkCountRespVO;
+import com.nian.shortlink.admin.remote.resp.link.ShortLinkCreateRespVO;
+import com.nian.shortlink.admin.remote.resp.link.ShortLinkPageRespVO;
+import com.nian.shortlink.admin.remote.resp.linkStats.ShortLinkAccessRecordRespVO;
+import com.nian.shortlink.admin.remote.resp.linkStats.ShortLinkStatsRespVO;
+import com.nian.shortlink.admin.remote.resp.recycle.ShortLinkRecycleBinPageRespVO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +44,16 @@ public interface ShortLinkRemoteService {
         //Result中的Data是个泛型，如果直接传结果的话，JSON反序列化时，JSON不知道这个是什么东西，那么就需要new TypeReference<>() {}去做一层转换，把resultCreateStr的类型传给它
         return JSON.parseObject(resultCreateStr, new TypeReference<>() {});
     }
+
+    /**
+     * 批量创建短链接
+     */
+    default Result<ShortLinkBatchCreateRespVO> batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam){
+        String resultCreateStr = HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/create/batch", JSON.toJSONString(requestParam));
+        //Result中的Data是个泛型，如果直接传结果的话，JSON反序列化时，JSON不知道这个是什么东西，那么就需要new TypeReference<>() {}去做一层转换，把resultCreateStr的类型传给它
+        return JSON.parseObject(resultCreateStr, new TypeReference<>() {});
+    }
+
 
     /**
      * 修改短链接
@@ -101,6 +127,9 @@ public interface ShortLinkRemoteService {
         HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/recycle/remove",JSON.toJSONString(requestParam));
     }
 
+
+    //短链接监控
+
     /**
      * 访问单个短链接指定时间内监控数据
      */
@@ -129,8 +158,6 @@ public interface ShortLinkRemoteService {
         String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/access-record", stringObjectMap);
         return JSON.parseObject(resultBodyStr, new TypeReference<>() {});
     }
-
-
 
     /**
      * 访问分组短链接指定时间内监控访问记录数据
