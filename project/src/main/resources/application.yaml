@@ -22,10 +22,20 @@ spring:
       prefix: /templates/
       suffix: .html
 short-link:
+  domain:
+    default: nurl.ink:8001
   stats:
     locale:
       amap-key: 3be9bf37cef1946819e333f36faf892f
-
+  goto-domain:
+    white-list:
+      enable: true
+      names: '拿个offer,知乎,掘金,博客园'
+      details:
+        - nageoffer.com
+        - zhihu.com
+        - juejin.cn
+        - cnblogs.com
 
 mybatis-plus:
   configuration:

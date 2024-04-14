@@ -20,3 +20,11 @@ spring:
 logging:
   level:
     com.nian.shortlink: debug
+
+short-link:
+  group:
+    max-num: 20
+  flow-limit:
+    enable: true
+    time-window: 1
+    max-access-count: 20

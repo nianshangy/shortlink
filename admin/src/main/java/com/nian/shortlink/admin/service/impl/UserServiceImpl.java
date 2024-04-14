@@ -1,6 +1,7 @@
 package com.nian.shortlink.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -9,10 +10,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.admin.common.convention.errorcode.UserErrorCode;
 import com.nian.shortlink.admin.common.convention.exception.ClientException;
+import com.nian.shortlink.admin.domain.entity.User;
 import com.nian.shortlink.admin.domain.req.user.UserLoginReqDTO;
 import com.nian.shortlink.admin.domain.req.user.UserRegisterReqDTO;
 import com.nian.shortlink.admin.domain.req.user.UserUpdateReqDTO;
-import com.nian.shortlink.admin.domain.entity.User;
 import com.nian.shortlink.admin.domain.resp.user.UserLoginRespVO;
 import com.nian.shortlink.admin.domain.resp.user.UserRespVO;
 import com.nian.shortlink.admin.mapper.UserMapper;
@@ -27,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.nian.shortlink.admin.common.constat.RedisCacheConstant.LOCK_USER_REGISTER_KEY;
@@ -57,19 +59,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Boolean hasUsername(String username) {
         //直接通过布隆过滤器去判断用户是否存在
-        //如果布隆过滤器存在username，说明不可以用,就返回false
-        return !userRegisterCacheBloomFilter.contains(username);
-
-        /*LambdaQueryWrapper<User> queryWrappe = Wrappers.lambdaQuery(User.class)
+        //如果布隆过滤器存在username，就返回true
+        if(userRegisterCacheBloomFilter.contains(username)){
+            return true;
+        }
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
                 .eq(User::getUsername, username);
-        User user = baseMapper.selectOne(queryWrappe);
-        return user != null;*/
+        User user = baseMapper.selectOne(queryWrapper);
+        return user != null;
     }
 
     @Override
     public void userRegister(UserRegisterReqDTO requestParam) {
         //1.判断用户是否存在
-        if (!hasUsername(requestParam.getUsername())) {
+        if (hasUsername(requestParam.getUsername())) {
             throw new ClientException(UserErrorCode.USER_NAME_EXIST);
         }
         //2.根据用户名去获取分布式锁(注意：后面还需要加上用户名，不然就是所以用户获取同一把锁了)
@@ -114,13 +117,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 .eq(User::getPassword, requestParam.getPassword())
                 .eq(User::getDelFlag, 0);
         //2.判断用户是否存在
-        if(queryWrapper == null){
+        User user = baseMapper.selectOne(queryWrapper);
+        if(user == null){
             throw new ClientException(UserErrorCode.USER_NULL);
         }
         //3.判断redis中用户是否存在
-        Boolean hasLogin = stringRedisTemplate.hasKey("login_" + requestParam.getUsername());
-        if(hasLogin != null && hasLogin){
-           throw new ClientException("用户已登录");
+        Map<Object, Object> hasLoginMap = stringRedisTemplate.opsForHash().entries("login_" + requestParam.getUsername());
+        if(CollUtil.isNotEmpty(hasLoginMap)){
+            //如果用户已经登录过后就返回token
+            String token = hasLoginMap.keySet().stream()
+                    .findFirst()
+                    .map(Object::toString)
+                    .orElseThrow(() -> new ClientException("用户登录错误"));
+            return new UserLoginRespVO(token);
         }
         //4.保存到redis中
         //4.1随机生成UUID作为token
@@ -128,7 +137,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         //4.2将UUID作为key去保存到redis
         stringRedisTemplate.opsForHash().put("login_" +
                 requestParam.getUsername(),uuid, JSON.toJSONString(requestParam));
-        stringRedisTemplate.expire("login_" + requestParam.getUsername(),30L, TimeUnit.DAYS);
+        stringRedisTemplate.expire("login_" + requestParam.getUsername(),30L, TimeUnit.MINUTES);
         return new UserLoginRespVO(uuid);
 
         //下面这个方法会让一个用户可以无限次注册

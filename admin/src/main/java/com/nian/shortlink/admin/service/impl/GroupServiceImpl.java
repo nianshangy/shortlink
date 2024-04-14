@@ -18,12 +18,17 @@ import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
 import com.nian.shortlink.admin.remote.resp.link.ShortLinkCountRespVO;
 import com.nian.shortlink.admin.service.IGroupService;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.nian.shortlink.admin.common.constat.RedisCacheConstant.LOCK_GROUP_SAVE_KEY;
 
 /**
  * 短链接分组接口实现层
@@ -34,23 +39,35 @@ import java.util.stream.Collectors;
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements IGroupService {
 
     ShortLinkRemoteService shortLinkRemoteService= new ShortLinkRemoteService(){};
+    private final RedissonClient redissonClient;
+
+    @Value("${short-link.group.max-num}")
+    private Integer groupMaxNum;
+
 
     @Override
     public void groupSave(String groupName) {
-        /*RLock lock = redissonClient.getLock(String.format(LOCK_GROUP_CREATE_KEY, username));
+        groupSave(UserContext.getUsername(),groupName);
+    }
+
+    @Override
+    public void groupSave(String username, String groupName) {
+        //这是为了防止同一用户在不同线程（可能同一用户在多个设备）同时新增分组，而超出最大分组数吧。
+        RLock lock = redissonClient.getLock(String.format(LOCK_GROUP_SAVE_KEY, username));
         lock.lock();
         try {
+            //判断该用户下分组是否大于20个
             LambdaQueryWrapper<Group> queryWrapper = Wrappers.lambdaQuery(Group.class)
                     .eq(Group::getUsername, username)
                     .eq(Group::getDelFlag, 0);
-            List<Group> groupDOList = baseMapper.selectList(queryWrapper);
-            if (CollUtil.isNotEmpty(groupDOList) && groupDOList.size() == groupMaxNum) {
+            List<Group> groupList = baseMapper.selectList(queryWrapper);
+            if(groupList != null && groupList.size() > groupMaxNum){
                 throw new ClientException(String.format("已超出最大分组数：%d", groupMaxNum));
             }
             String gid;
             do {
-                gid = RandomGenerator.generateRandom();
-            } while (!hasGid(username, gid));
+                gid = RandomUtil.randomString(6);
+            } while (hasGid(username,gid));
             Group group = Group.builder()
                     .gid(gid)
                     .sortOrder(0)
@@ -60,23 +77,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
             baseMapper.insert(group);
         } finally {
             lock.unlock();
-        }*/
-        groupSave(UserContext.getUsername(),groupName);
-    }
-
-    @Override
-    public void groupSave(String username, String groupName) {
-        String gid;
-        do {
-            gid = RandomUtil.randomString(6);
-        } while (hasGid(username,gid));
-        Group group = Group.builder()
-                .gid(gid)
-                .sortOrder(0)
-                .username(username)
-                .name(groupName)
-                .build();
-        baseMapper.insert(group);
+        }
     }
 
     @Override

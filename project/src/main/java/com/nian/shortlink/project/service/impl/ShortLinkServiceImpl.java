@@ -16,6 +16,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.project.common.convention.exception.ClientException;
+import com.nian.shortlink.project.common.enums.VailDateTypeEnum;
+import com.nian.shortlink.project.config.GotoDomainWhiteListConfiguration;
 import com.nian.shortlink.project.domain.entity.*;
 import com.nian.shortlink.project.domain.req.link.ShortLinkBatchCreateReqDTO;
 import com.nian.shortlink.project.domain.req.link.ShortLinkCreateReqDTO;
@@ -78,9 +80,13 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final LinkDeviceMapper linkDeviceMapper;
     private final LinkNetworkMapper linkNetworkMapper;
     private final LinkStatsTodayMapper linkStatsTodayMapper;
+    private final GotoDomainWhiteListConfiguration gotoDomainWhiteListConfiguration;
 
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
+
+    @Value("${short-link.domain.default}")
+    private String createShortLinkDefaultDomain;
 
     @SneakyThrows
     @Override
@@ -88,12 +94,12 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         //获取短链接网站的域名
         String serverName = request.getServerName();
         //TODO 不确定是否要自己直接指定域名与端口
-        /*String serverPort = Optional.of(request.getServerPort())
+        String serverPort = Optional.of(request.getServerPort())
                 .filter(each -> !Objects.equals(each, 80))
                 .map(String::valueOf)
                 .map(each -> ":" + each)
-                .orElse("");*/
-        String fullShortUrl = serverName + "/" + shortUrl;
+                .orElse("");
+        String fullShortUrl = serverName + serverPort + "/" + shortUrl;
         //先查询缓存，判断缓存中是否存在
         String originalUrl = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY, fullShortUrl));
         if (StrUtil.isNotBlank(originalUrl)) {
@@ -163,8 +169,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Transactional
     @Override
     public ShortLinkCreateRespVO createShortLink(ShortLinkCreateReqDTO requestParam) {
+        verificationWhitelist(requestParam.getOriginUrl());
         String shortLinkSuffix = generatedSuffix(requestParam);
-        String fullShortUrl = StrBuilder.create(requestParam.getDomain())
+        String fullShortUrl = StrBuilder.create(createShortLinkDefaultDomain)
                 .append("/")
                 .append(shortLinkSuffix)
                 .toString();
@@ -176,7 +183,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .favicon(getFavicon(requestParam.getOriginUrl()))
                 .describe(requestParam.getDescribe())
                 .originUrl(requestParam.getOriginUrl())
-                .domain(requestParam.getDomain())
+                .domain(createShortLinkDefaultDomain)
                 .gid(requestParam.getGid())
                 .totalPv(0)
                 .totalUv(0)
@@ -244,6 +251,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateShortLink(ShortLinkUpdateReqDTO requestParam) {
+        verificationWhitelist(requestParam.getOriginUrl());
         LambdaQueryWrapper<ShortLink> queryWrapper = Wrappers.lambdaQuery(ShortLink.class)
                 .eq(ShortLink::getGid, requestParam.getOriginGid())
                 .eq(ShortLink::getFullShortUrl, requestParam.getFullShortUrl())
@@ -301,6 +309,17 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .todayUip(hasShortLink.getTotalUip())
                     .build();
             baseMapper.insert(shortLinkDO);
+        }
+        //判断是否修改了有效期，修改了就直接将缓存删除，让跳转时重建存，防止短链接过期后还是可以跳转
+        if(!Objects.equals(hasShortLink.getValidDateType(),requestParam.getValidDateType())
+                || !Objects.equals(hasShortLink.getValidDate(),requestParam.getValidDate())) {
+            stringRedisTemplate.delete(String.format(GOTO_SHORT_LINK_KEY, requestParam.getFullShortUrl()));
+            //先判断缓存中是否存在空页面的缓存
+            if(hasShortLink.getValidDate() != null && hasShortLink.getValidDate().before(new Date())){
+                if(Objects.equals(requestParam.getValidDateType(), VailDateTypeEnum.PERMANENT.getType()) || requestParam.getValidDate().after(new Date())){
+                    stringRedisTemplate.delete(String.format(GOTO_IS_NULL_SHORT_LINK_KEY, requestParam.getFullShortUrl()));
+                }
+            }
         }
     }
 
@@ -497,7 +516,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             String originUrl = requestParam.getOriginUrl();
             originUrl += System.currentTimeMillis();
             shortLinkUri = HashUtil.hashToBase62(originUrl);
-            if (!shortLinkCreateCacheBloomFilter.contains(requestParam.getDomain() + "/" + shortLinkUri)) {
+            if (!shortLinkCreateCacheBloomFilter.contains(createShortLinkDefaultDomain + "/" + shortLinkUri)) {
                 break;
             }
             customGenerateCount++;
@@ -522,5 +541,21 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             }
         }
         return null;
+    }
+
+    private void verificationWhitelist(String originUrl){
+        Boolean enable = gotoDomainWhiteListConfiguration.getEnable();
+        if(enable == null || !enable){
+            return;
+        }
+        //去除origin中的www
+        String domain = LinkUtil.extractDomain(originUrl);
+        if (StrUtil.isBlank(domain)) {
+            throw new ClientException("跳转链接填写错误");
+        }
+        List<String> whitelist = gotoDomainWhiteListConfiguration.getDetails();
+        if(!whitelist.contains(domain)){
+            throw new ClientException("跳转的网站异常，请生成以下网站跳转链接：" + gotoDomainWhiteListConfiguration.getDetails());
+        }
     }
 }
