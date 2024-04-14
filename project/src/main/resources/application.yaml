@@ -23,7 +23,7 @@ spring:
       suffix: .html
 short-link:
   domain:
-    default: nurl.ink:8001
+    default: nian.ink:8001
   stats:
     locale:
       amap-key: 3be9bf37cef1946819e333f36faf892f

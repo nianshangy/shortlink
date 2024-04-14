@@ -1,5 +1,6 @@
 package com.nian.shortlink.project.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nian.shortlink.project.common.convention.result.Result;
 import com.nian.shortlink.project.common.convention.result.ResultUtils;
@@ -11,6 +12,7 @@ import com.nian.shortlink.project.domain.resp.link.ShortLinkBatchCreateRespVO;
 import com.nian.shortlink.project.domain.resp.link.ShortLinkCountRespVO;
 import com.nian.shortlink.project.domain.resp.link.ShortLinkCreateRespVO;
 import com.nian.shortlink.project.domain.resp.link.ShortLinkPageRespVO;
+import com.nian.shortlink.project.handler.CustomBlockHandler;
 import com.nian.shortlink.project.service.IShortLinkService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +43,11 @@ public class ShortLinkController {
      * 创建短链接
      */
     @PostMapping("/api/short-link/v1/create")
+    @SentinelResource(
+            value = "create_short-link",
+            blockHandler = "createShortLinkBlockHandlerMethod",
+            blockHandlerClass = CustomBlockHandler.class
+    )
     public Result<ShortLinkCreateRespVO> createShortLink(@RequestBody ShortLinkCreateReqDTO requestParam){
         return ResultUtils.success(shortLinkService.createShortLink(requestParam),"创建短链接成功！");
     }

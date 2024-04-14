@@ -73,5 +73,15 @@
             <artifactId>jsoup</artifactId>
             <version>1.17.2</version>
         </dependency>
+        <!-- sentinel的依赖 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <!-- sentinel-annotation-aspectj的依赖 -->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-annotation-aspectj</artifactId>
+        </dependency>
     </dependencies>
 </project>
