@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.nian.shortlink.admin.common.constat.RedisCacheConstant.LOCK_USER_REGISTER_KEY;
+import static com.nian.shortlink.admin.common.constat.RedisCacheConstant.USER_LOGIN_KEY;
 
 /**
  * @description 针对表【t_user】的数据库操作Service实现
@@ -122,7 +123,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new ClientException(UserErrorCode.USER_NULL);
         }
         //3.判断redis中用户是否存在
-        Map<Object, Object> hasLoginMap = stringRedisTemplate.opsForHash().entries("login_" + requestParam.getUsername());
+        Map<Object, Object> hasLoginMap = stringRedisTemplate.opsForHash().entries(USER_LOGIN_KEY + requestParam.getUsername());
         if(CollUtil.isNotEmpty(hasLoginMap)){
             //如果用户已经登录过后就返回token
             String token = hasLoginMap.keySet().stream()
@@ -135,9 +136,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         //4.1随机生成UUID作为token
         String uuid = UUID.randomUUID().toString();
         //4.2将UUID作为key去保存到redis
-        stringRedisTemplate.opsForHash().put("login_" +
+        stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY +
                 requestParam.getUsername(),uuid, JSON.toJSONString(requestParam));
-        stringRedisTemplate.expire("login_" + requestParam.getUsername(),30L, TimeUnit.MINUTES);
+        stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getUsername(),30L, TimeUnit.MINUTES);
         return new UserLoginRespVO(uuid);
 
         //下面这个方法会让一个用户可以无限次注册
@@ -147,14 +148,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public Boolean userCheckLogin(String username,String token) {
-        return stringRedisTemplate.opsForHash().hasKey("login_" + username,token);
+        return stringRedisTemplate.opsForHash().hasKey(USER_LOGIN_KEY + username,token);
     }
 
     @Override
     public void userLogout(String username,String token) {
         //TODO 验证退出用户名是否与当前登录用户名一致
         if(userCheckLogin(username,token)){
-            stringRedisTemplate.delete("login_" + username);
+            stringRedisTemplate.delete(USER_LOGIN_KEY + username);
             return;
         }
         throw new ClientException("用户token不存在或用户未登录");

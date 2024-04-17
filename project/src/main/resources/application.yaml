@@ -21,6 +21,7 @@ spring:
     view:
       prefix: /templates/
       suffix: .html
+
 short-link:
   domain:
     default: nian.ink:8001

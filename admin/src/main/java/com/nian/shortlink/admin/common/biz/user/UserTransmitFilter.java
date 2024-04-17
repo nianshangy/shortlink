@@ -17,6 +17,8 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Objects;
 
+import static com.nian.shortlink.admin.common.constat.RedisCacheConstant.USER_LOGIN_KEY;
+
 /**
  * 用户信息传输过滤器
  */
@@ -47,7 +49,7 @@ public class UserTransmitFilter implements Filter {
                 }
                 Object userInfoJsonStr;
                 try {
-                    userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + username, token);
+                    userInfoJsonStr = stringRedisTemplate.opsForHash().get(USER_LOGIN_KEY + username, token);
                     if (userInfoJsonStr == null) {
                         throw new ClientException("用户登录失败");
                     }
