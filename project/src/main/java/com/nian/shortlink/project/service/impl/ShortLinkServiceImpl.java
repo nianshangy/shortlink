@@ -470,7 +470,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 throw new ClientException("创建短链接过于频繁，请稍后再试");
             }
             String originUrl = requestParam.getOriginUrl();
-            originUrl += System.currentTimeMillis();
+            originUrl += UUID.fastUUID().toString();
             shortLinkUri = HashUtil.hashToBase62(originUrl);
             if (!shortLinkCreateCacheBloomFilter.contains(createShortLinkDefaultDomain + "/" + shortLinkUri)) {
                 break;
