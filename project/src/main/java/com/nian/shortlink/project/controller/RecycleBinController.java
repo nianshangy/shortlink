@@ -10,6 +10,7 @@ import com.nian.shortlink.project.domain.req.recycle.ShortLinkRecycleBinPageReqD
 import com.nian.shortlink.project.domain.resp.recycle.ShortLinkRecycleBinPageRespVO;
 import com.nian.shortlink.project.service.IRecycleBinService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,7 @@ public class RecycleBinController {
     /**
      * 分页查寻回收站短链接
      */
-    @PostMapping("/api/short-link/v1/recycle/page")
+    @GetMapping("/api/short-link/v1/recycle/page")
     public Result<IPage<ShortLinkRecycleBinPageRespVO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam){
         return ResultUtils.success(recycleBinService.pageRecycleShortLink(requestParam),"查询成功！");
     }

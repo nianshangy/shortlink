@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//已废弃，改成feign远程调用
 /**
  * ShortLink远程调用服务
  */

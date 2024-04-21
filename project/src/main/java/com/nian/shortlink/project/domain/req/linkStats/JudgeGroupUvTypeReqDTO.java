@@ -6,17 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 获取用户信息是否新老访客
+ * 获取分组用户信息是否新老访客
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JudgeUvTypeReqDTO {
-    /**
-     * 完整短链接
-     */
-    private String fullShortUrl;
+public class JudgeGroupUvTypeReqDTO {
 
     /**
      * 分组标识

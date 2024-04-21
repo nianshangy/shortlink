@@ -42,7 +42,7 @@ public class UserFlowRiskControlFilter implements Filter {
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource(USER_FLOW_RISK_CONTROL_LUA_SCRIPT_PATH)));
         redisScript.setResultType(Long.class);
         //获取用户名，当登录与注册时获取不到用户名则设置成other
-        String username = Optional.ofNullable(UserContext.getUser().getUsername()).orElse("other");
+        String username = Optional.ofNullable(UserContext.getUsername()).orElse("other");
         Long result = null;
         try{
             result = stringRedisTemplate.execute(redisScript, ListUtil.toList(username), userFlowRiskControlConfiguration.getTimeWindow());

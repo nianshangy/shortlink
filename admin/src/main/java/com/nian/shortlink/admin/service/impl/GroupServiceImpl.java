@@ -1,3 +1,4 @@
+
 package com.nian.shortlink.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -9,12 +10,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nian.shortlink.admin.common.biz.user.UserContext;
 import com.nian.shortlink.admin.common.convention.exception.ClientException;
 import com.nian.shortlink.admin.domain.entity.Group;
-import com.nian.shortlink.admin.domain.req.group.GroupDeleteReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupSortReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupUpdateReqDTO;
 import com.nian.shortlink.admin.domain.resp.group.GroupQueryListRespVO;
 import com.nian.shortlink.admin.mapper.GroupMapper;
-import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
+import com.nian.shortlink.admin.remote.ShortLinkActualRemoteService;
 import com.nian.shortlink.admin.remote.resp.link.ShortLinkCountRespVO;
 import com.nian.shortlink.admin.service.IGroupService;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +35,9 @@ import static com.nian.shortlink.admin.common.constat.RedisCacheConstant.LOCK_GR
  */
 @Service
 @RequiredArgsConstructor
-
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements IGroupService {
 
-    ShortLinkRemoteService shortLinkRemoteService= new ShortLinkRemoteService(){};
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
     private final RedissonClient redissonClient;
 
     @Value("${short-link.group.max-num}")
@@ -88,7 +87,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
                 .orderByDesc(Group::getSortOrder, Group::getUpdateTime);
         List<Group> groups = baseMapper.selectList(queryWrapper);
         List<GroupQueryListRespVO> groupQueryListRespVOList = BeanUtil.copyToList(groups, GroupQueryListRespVO.class);
-        List<ShortLinkCountRespVO> linkCountRespDTO = shortLinkRemoteService.listCountShortLink(groups.stream().map(Group::getGid).toList()).getData();
+        List<ShortLinkCountRespVO> linkCountRespDTO = shortLinkActualRemoteService.listCountShortLink(groups.stream().map(Group::getGid).toList()).getData();
         Map<String, Integer> counts = linkCountRespDTO.stream().collect(Collectors.toMap(ShortLinkCountRespVO::getGid, ShortLinkCountRespVO::getShortLinkCount));
         groupQueryListRespVOList.forEach(each -> {
             each.setShortLinkCount(counts.get(each.getGid()));
@@ -108,11 +107,11 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
     }
 
     @Override
-    public void deleteGroup(GroupDeleteReqDTO requestParam) {
+    public void deleteGroup(String gid) {
         LambdaUpdateWrapper<Group> updateWrapper = Wrappers.lambdaUpdate(Group.class)
                 .eq(Group::getDelFlag, 0)
                 .eq(Group::getUsername, UserContext.getUsername())
-                .eq(Group::getGid, requestParam.getGid());
+                .eq(Group::getGid, gid);
         Group group = new Group();
         group.setDelFlag(1);
         int update = baseMapper.update(group, updateWrapper);

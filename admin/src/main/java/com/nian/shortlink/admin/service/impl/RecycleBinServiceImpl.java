@@ -9,7 +9,7 @@ import com.nian.shortlink.admin.common.convention.exception.ServiceException;
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.domain.entity.Group;
 import com.nian.shortlink.admin.mapper.GroupMapper;
-import com.nian.shortlink.admin.remote.ShortLinkRemoteService;
+import com.nian.shortlink.admin.remote.ShortLinkActualRemoteService;
 import com.nian.shortlink.admin.remote.req.recycle.ShortLinkRecycleBinPageReqDTO;
 import com.nian.shortlink.admin.remote.resp.recycle.ShortLinkRecycleBinPageRespVO;
 import com.nian.shortlink.admin.service.IRecycleBinService;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecycleBinServiceImpl implements IRecycleBinService {
 
-    ShortLinkRemoteService shortLinkRemoteService= new ShortLinkRemoteService(){};
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
     private final GroupMapper groupMapper;
 
     @Override
@@ -39,6 +39,6 @@ public class RecycleBinServiceImpl implements IRecycleBinService {
             throw new ServiceException("用户无分组信息");
         }
         requestParam.setGidList(groupList.stream().map(Group::getGid).collect(Collectors.toList()));
-        return shortLinkRemoteService.pageRecycleShortLink(requestParam.getGidList(),requestParam.getCurrent(),requestParam.getSize());
+        return shortLinkActualRemoteService.pageRecycleShortLink(requestParam);
     }
 }

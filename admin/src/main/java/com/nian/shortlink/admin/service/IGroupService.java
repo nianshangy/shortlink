@@ -1,10 +1,9 @@
 package com.nian.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.nian.shortlink.admin.domain.req.group.GroupDeleteReqDTO;
+import com.nian.shortlink.admin.domain.entity.Group;
 import com.nian.shortlink.admin.domain.req.group.GroupSortReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupUpdateReqDTO;
-import com.nian.shortlink.admin.domain.entity.Group;
 import com.nian.shortlink.admin.domain.resp.group.GroupQueryListRespVO;
 
 import java.util.List;
@@ -41,9 +40,9 @@ public interface IGroupService extends IService<Group> {
 
     /**
      * 删除短链接分组
-     * @param requestParam 删除短链接分组参数
+     * gid 分组标识
      */
-    void deleteGroup(GroupDeleteReqDTO requestParam);
+    void deleteGroup(String gid);
 
     /**
      * 短链接分组排序

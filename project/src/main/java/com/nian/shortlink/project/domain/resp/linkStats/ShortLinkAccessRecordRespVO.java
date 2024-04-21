@@ -15,7 +15,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShortLinkAccessRecordRespVO{
+public class ShortLinkAccessRecordRespVO {
     /**
      * 访客类型
      */

@@ -2,7 +2,6 @@ package com.nian.shortlink.admin.controller;
 
 import com.nian.shortlink.admin.common.convention.result.Result;
 import com.nian.shortlink.admin.common.convention.result.ResultUtils;
-import com.nian.shortlink.admin.domain.req.group.GroupDeleteReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupSaveReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupSortReqDTO;
 import com.nian.shortlink.admin.domain.req.group.GroupUpdateReqDTO;
@@ -52,8 +51,8 @@ public class GroupController {
      * 删除短链接分组
      */
     @DeleteMapping("/api/short-link/admin/v1/group")
-    public Result<Void> deleteGroup(@RequestBody GroupDeleteReqDTO requestParam){
-        groupService.deleteGroup(requestParam);
+    public Result<Void> deleteGroup(@RequestParam String gid){
+        groupService.deleteGroup(gid);
         return ResultUtils.success("删除成功");
     }
 

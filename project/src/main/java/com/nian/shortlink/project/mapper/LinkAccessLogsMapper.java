@@ -2,6 +2,7 @@ package com.nian.shortlink.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nian.shortlink.project.domain.entity.LinkAccessLogs;
+import com.nian.shortlink.project.domain.req.linkStats.JudgeGroupUvTypeReqDTO;
 import com.nian.shortlink.project.domain.req.linkStats.JudgeUvTypeReqDTO;
 import com.nian.shortlink.project.domain.req.linkStats.ShortLinkGroupStatsReqDTO;
 import com.nian.shortlink.project.domain.req.linkStats.ShortLinkStatsReqDTO;
@@ -112,13 +113,39 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogs> {
             "    AND gid = #{param.gid} " +
             "    AND create_time BETWEEN #{param.startDate} AND #{param.endDate} " +
             "    AND user IN " +
-            "    <foreach item='item' index='index' collection='param.userList' open='(' separator=',' close=')'> " +
+            "    <foreach item='item' index='index' collection='userAccessLogsList' open='(' separator=',' close=')'> " +
             "        #{item} " +
             "    </foreach> " +
             "GROUP BY " +
             "    user,create_time;" +
             "    </script>"
     )
-    List<HashMap<String, Object>> listUvTypesByShortLink(@Param("param") JudgeUvTypeReqDTO requestParam);
+    List<HashMap<String, Object>> listUvTypesByShortLink(@Param("param") JudgeUvTypeReqDTO requestParam,@Param("userAccessLogsList") List<String> userAccessLogsList);
 
+    /**
+     * 获取用户信息是否新老访客
+     */
+    //TODO 新老访客判断
+    @Select("<script> " +
+            "SELECT " +
+            "    user, " +
+            "    CASE " +
+            "        WHEN COUNT(*) = 1 THEN '新访客' " +
+            "        WHEN create_time = MIN(create_time) THEN '新访客' " +
+            "        ELSE '老访客' " +
+            "    END AS uvType " +
+            "FROM " +
+            "    t_link_access_logs " +
+            "WHERE " +
+            "    gid = #{param.gid} " +
+            "    AND create_time BETWEEN #{param.startDate} AND #{param.endDate} " +
+            "    AND user IN " +
+            "    <foreach item='item' index='index' collection='userAccessLogsList' open='(' separator=',' close=')'> " +
+            "        #{item} " +
+            "    </foreach> " +
+            "GROUP BY " +
+            "    user,create_time;" +
+            "    </script>"
+    )
+    List<HashMap<String, Object>> listGroupUvTypesByShortLink(@Param("param") JudgeGroupUvTypeReqDTO requestParam, @Param("userAccessLogsList") List<String> userAccessLogsList);
 }
