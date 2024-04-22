@@ -138,7 +138,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String uuid = UUID.randomUUID().toString();
         //4.2将UUID作为key去保存到redis
         stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY +
-                requestParam.getUsername(),uuid, JSON.toJSONString(requestParam));
+                requestParam.getUsername(),uuid, JSON.toJSONString(user));
         stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getUsername(),30L, TimeUnit.MINUTES);
         return new UserLoginRespVO(uuid);
 
