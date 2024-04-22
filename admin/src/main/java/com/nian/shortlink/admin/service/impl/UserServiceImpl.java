@@ -126,6 +126,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         Map<Object, Object> hasLoginMap = stringRedisTemplate.opsForHash().entries(USER_LOGIN_KEY + requestParam.getUsername());
         if(CollUtil.isNotEmpty(hasLoginMap)){
             //如果用户已经登录过后就返回token
+            stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getUsername(),30L, TimeUnit.MINUTES);
             String token = hasLoginMap.keySet().stream()
                     .findFirst()
                     .map(Object::toString)
