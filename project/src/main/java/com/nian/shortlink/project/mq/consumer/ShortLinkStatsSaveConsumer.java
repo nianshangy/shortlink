@@ -127,7 +127,7 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String , MapRe
                         .gid(gid)
                         .country("中国")
                         .province(StrUtil.equals(actualProvince, "[]") ? "未知" : actualProvince)
-                        .city(StrUtil.equals(actualProvince, "[]") ? "未知" : actualCity)
+                        .city(StrUtil.equals(actualCity, "[]") ? "未知" : actualCity)
                         .adcode(StrUtil.equals(actualAdcode, "[]") ? "未知" : actualAdcode)
                         .cnt(1)
                         .date(date)
@@ -184,7 +184,9 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String , MapRe
                     .browser(shortLinkStatsRecord.getBrowser())
                     .os(shortLinkStatsRecord.getOs())
                     .network(shortLinkStatsRecord.getNetwork())
-                    .locale(StrUtil.join("-", "中国", actualProvince, actualCity))
+                    .locale(StrUtil.join("-", "中国",
+                            StrUtil.equals(actualProvince, "[]") ? "未知" : actualProvince,
+                            StrUtil.equals(actualCity, "[]") ? "未知" : actualCity))
                     .device(shortLinkStatsRecord.getDevice())
                     .build();
             linkAccessLogsMapper.insert(linkAccessLogs);

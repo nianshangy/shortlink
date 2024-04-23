@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 数据库持久层配置类
  */
-@Configuration
+@Configuration(value = "dataBaseConfigurationByAdmin")
 public class DataBaseConfiguration {
 
     /**

@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * ShortLink远程调用服务
  */
-@FeignClient(value = "short-link-project")
+@FeignClient(value = "short-link-project" , url = "${aggregation.remote-url:}")
 public interface ShortLinkActualRemoteService {
 
     //短链接有关操作
