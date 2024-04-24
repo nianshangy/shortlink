@@ -86,14 +86,14 @@
     </dependencies>
 
 
-    <build>
+    <!--<build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
-                    <!-- maven打包插件 加了这个打包就生成可执行的文件，否则生成的就是源码文件 -->
+                    &lt;!&ndash; maven打包插件 加了这个打包就生成可执行的文件，否则生成的就是源码文件 &ndash;&gt;
                     <execution>
                         <goals>
                             <goal>repackage</goal>
@@ -102,5 +102,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 </project>

@@ -1,15 +1,18 @@
+/*
 import java.util.Scanner;
 
+*/
 /**
  * 基于接口编程模拟生产形状
- */
-public class ShapeApplication {
+ *//*
+
+public class ProduceShapeApplication {
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
-        String description = "请选择要绘制的图形[1.圆 2.圆角矩形 3.正方形 4.矩形]";
+        String description = "请选择要绘制的图形[1.圆 2.三角形 3.正方形 4.矩形]";
 
         System.out.println(description);
 
@@ -31,15 +34,17 @@ public class ShapeApplication {
 
             case 2:
 
-                System.out.println("请输入圆角矩形的长、宽和圆角半径");
+                System.out.println("请输入三角形的边长");
 
-                double length = scanner.nextDouble();
-                double width = scanner.nextDouble();
-                double cornerRadius = scanner.nextDouble();
+                double edge1 = scanner.nextDouble();
 
-                RoundedRectangle roundedRectangle = ProduceShapeFactory.produce(new RoundedRectangleProducer(), length, width, cornerRadius);
+                double edge2 = scanner.nextDouble();
 
-                System.out.println(roundedRectangle);
+                double edge3 = scanner.nextDouble();
+
+                Triangle triangle = ProduceShapeFactory.produce(new TriangleProducer(), edge1, edge2, edge3);
+
+                System.out.println(triangle);
 
                 break;
 
@@ -59,10 +64,11 @@ public class ShapeApplication {
 
                 System.out.println("请输入矩形的长和宽");
 
-                double rectLength = scanner.nextDouble();
-                double rectWidth = scanner.nextDouble();
+                double width = scanner.nextDouble();
 
-                Rectangle rectangle = ProduceShapeFactory.produce(new RectangleProducer(), rectLength, rectWidth);
+                double height = scanner.nextDouble();
+
+                Rectangle rectangle = ProduceShapeFactory.produce(new RectangleProducer(), width, height);
 
                 System.out.println(rectangle);
 
@@ -77,27 +83,33 @@ public class ShapeApplication {
     }
 }
 
+*/
 /**
  * 形状生产工厂类
- */
+ *//*
+
 class ProduceShapeFactory {
 
-    /**
+    */
+/**
      * 根据形状生产者接口实例和参数生产形状对象
      *
      * @param producer 形状生产者接口实例
      * @param edges    形状所需参数
      * @param <T>      形状类型
      * @return 生产的形状对象
-     */
+     *//*
+
     public static <T> T produce(IShapeProducer<T> producer, double... edges) {
         return producer.produce(edges);
     }
 }
 
+*/
 /**
  * 圆形生产者，实现 IShapeProducer 接口
- */
+ *//*
+
 class CircleProducer implements IShapeProducer<Circle> {
     @Override
     public Circle produce(double... edges) {
@@ -109,25 +121,29 @@ class CircleProducer implements IShapeProducer<Circle> {
     }
 }
 
+*/
 /**
- * 圆角矩形生产者，实现 IShapeProducer 接口
- */
-class RoundedRectangleProducer implements IShapeProducer<RoundedRectangle> {
+ * 三角形生产者，实现 IShapeProducer 接口
+ *//*
+
+class TriangleProducer implements IShapeProducer<Triangle> {
     @Override
-    public RoundedRectangle produce(double... edges) {
+    public Triangle produce(double... edges) {
         if (edges.length != 3) {
-            throw new IllegalArgumentException("Invalid number of arguments for RoundedRectangle production.");
+            throw new IllegalArgumentException("Invalid number of arguments for Triangle production.");
         }
-        double length = edges[0];
-        double width = edges[1];
-        double cornerRadius = edges[2];
-        return new RoundedRectangle(length, width, cornerRadius);
+        double edge1 = edges[0];
+        double edge2 = edges[1];
+        double edge3 = edges[2];
+        return new Triangle(edge1, edge2, edge3);
     }
 }
 
+*/
 /**
  * 正方形生产者，实现 IShapeProducer 接口
- */
+ *//*
+
 class SquareProducer implements IShapeProducer<Square> {
     @Override
     public Square produce(double... edges) {
@@ -139,24 +155,28 @@ class SquareProducer implements IShapeProducer<Square> {
     }
 }
 
+*/
 /**
  * 矩形生产者，实现 IShapeProducer 接口
- */
+ *//*
+
 class RectangleProducer implements IShapeProducer<Rectangle> {
     @Override
     public Rectangle produce(double... edges) {
         if (edges.length != 2) {
             throw new IllegalArgumentException("Invalid number of arguments for Rectangle production.");
         }
-        double length = edges[0];
-        double width = edges[1];
-        return new Rectangle(length, width);
+        double width = edges[0];
+        double height = edges[1];
+        return new Rectangle(width, height);
     }
 }
 
+*/
 /**
  * 圆形类
- */
+ *//*
+
 class Circle {
     private final double radius;
 
@@ -172,95 +192,11 @@ class Circle {
     }
 }
 
-/**
- * 圆角矩形类
- */
-class RoundedRectangle {
-    private final double length;
-    private final double width;
-    private final double cornerRadius;
-
-    public RoundedRectangle(double length, double width, double cornerRadius) {
-        this.length = length;
-        this.width = width;
-        this.cornerRadius = cornerRadius;
-    }
-
-    @Override
-    public String toString() {
-        return "RoundedRectangle{" +
-                "length=" + length +
-                ", width=" + width +
-                ", cornerRadius=" + cornerRadius +
-                '}';
-    }
-}
-
-/**
- * 正方形类
- */
-class Square {
-    private final double edge;
-
-    public Square(double edge) {
-        this.edge = edge;
-    }
-
-    @Override
-    public String toString() {
-        return "Square{" +
-                "edge=" + edge +
-                '}';
-    }
-}
-
-/**
- * 矩形类
- */
-class Rectangle {
-    private final double length;
-    private final double width;
-
-    public Rectangle(double length, double width) {
-        this.length = length;
-        this.width = width;
-    }
-
-    @Override
-    public String toString() {
-        return "Rectangle{" +
-                "length=" + length +
-                ", width=" + width +
-                '}';
-    }
-}
-
-/**
- * 形状生产者接口
- */
-interface IShapeProducer<T> {
-    public T produce(double... edges);
-}
-
-/**
- * 三角形生产者，实现 IShapeProducer 接口
- */
-class TriangleProducer implements IShapeProducer<Triangle> {
-    @Override
-    public Triangle produce(double... edges) {
-        if (edges.length != 3) {
-            throw new IllegalArgumentException("Invalid number of arguments for Triangle production.");
-        }
-        double edge1 = edges[0];
-        double edge2 = edges[1];
-        double edge3 = edges[2];
-        return new Triangle(edge1, edge2, edge3);
-    }
-}
-
+*/
 /**
  * 三角形类
- */
+ *//*
+
 class Triangle {
     private final double edge1;
     private final double edge2;
@@ -281,3 +217,56 @@ class Triangle {
                 '}';
     }
 }
+
+*/
+/**
+ * 正方形类
+ *//*
+
+class Square {
+    private final double edge;
+
+    public Square(double edge) {
+        this.edge = edge;
+    }
+
+    @Override
+    public String toString() {
+        return "Square{" +
+                "edge=" + edge +
+                '}';
+    }
+}
+
+*/
+/**
+ * 矩形类
+ *//*
+
+class Rectangle {
+    private final double width;
+    private final double height;
+
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public String toString() {
+        return "Rectangle{" +
+                "width=" + width +
+                ", height=" + height +
+                '}';
+    }
+}
+
+*/
+/**
+ * 形状生产者接口
+ *//*
+
+interface IShapeProducer<T> {
+    public T produce(double... edges);
+}
+*/
