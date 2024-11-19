@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: short-link-aggregation
+  cloud:
+    nacos:
+      config:
+        server-addr: 47.97.215.156:8848
+        file-extension: yaml
+      discovery:
+        server-addr: 47.97.215.156:8848
+
+
